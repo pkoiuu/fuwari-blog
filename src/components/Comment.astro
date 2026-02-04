@@ -15,65 +15,6 @@
   // 标记是否已初始化
   var initialized = false;
   
-  // 阻止所有滚动行为
-  function blockAllScroll() {
-    var originalScrollTo = window.scrollTo;
-    var originalScrollBy = window.scrollBy;
-    
-    window.scrollTo = function(x, y) {
-      // 检查调用栈，如果是 Twikoo 调用则阻止
-      try {
-        var stack = new Error().stack || '';
-        if (stack.indexOf('twikoo') !== -1 || stack.indexOf('tk-') !== -1) {
-          console.log('[Twikoo] Blocked scrollTo');
-          return;
-        }
-      } catch(e) {}
-      return originalScrollTo.apply(this, arguments);
-    };
-    
-    window.scrollBy = function(x, y) {
-      try {
-        var stack = new Error().stack || '';
-        if (stack.indexOf('twikoo') !== -1 || stack.indexOf('tk-') !== -1) {
-          console.log('[Twikoo] Blocked scrollBy');
-          return;
-        }
-      } catch(e) {}
-      return originalScrollBy.apply(this, arguments);
-    };
-    
-    // 阻止 hash 变化导致的滚动
-    window.addEventListener('hashchange', function(e) {
-      if (location.hash.indexOf('comment') !== -1) {
-        e.preventDefault();
-        history.replaceState(null, null, location.pathname + location.search);
-      }
-    }, true);
-  }
-  
-  // 阻止链接点击导致的滚动
-  function preventLinkScroll() {
-    document.addEventListener('click', function(e) {
-      var target = e.target;
-      // 向上查找 a 标签
-      while (target && target.tagName !== 'A') {
-        target = target.parentElement;
-      }
-      
-      if (target && target.tagName === 'A') {
-        var href = target.getAttribute('href') || '';
-        // 阻止所有包含 #comment 的链接
-        if (href.indexOf('#comment') !== -1 || href.indexOf('#tk-') !== -1) {
-          e.preventDefault();
-          e.stopPropagation();
-          console.log('[Twikoo] Blocked link:', href);
-          return false;
-        }
-      }
-    }, true);
-  }
-  
   // 初始化 Twikoo
   function initTwikoo() {
     if (initialized) return;
@@ -82,10 +23,6 @@
     if (!container) return;
     
     initialized = true;
-    
-    // 先阻止滚动
-    blockAllScroll();
-    preventLinkScroll();
     
     // 加载 Twikoo
     if (typeof twikoo === 'undefined') {
@@ -161,8 +98,6 @@
 :global(.tk-expand),
 :global(.tk-comment) {
   scroll-behavior: auto !important;
-  scroll-margin: 0 !important;
-  scroll-padding: 0 !important;
 }
 
 :global(.tk-main) {
