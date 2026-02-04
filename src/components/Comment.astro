@@ -1,0 +1,66 @@
+<div id="tcomment" class="twikoo-container"></div>
+
+<style scoped>
+.twikoo-container {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background-color: var(--card-bg);
+  border-radius: var(--radius-large);
+  border: 1px solid var(--line-divider);
+}
+
+/* 确保Twikoo样式与页面风格一致 */
+:global(#tcomment) {
+  --twikoo-bg-color: var(--card-bg);
+  --twikoo-text-color: var(--text-primary);
+  --twikoo-border-color: var(--line-divider);
+  --twikoo-button-bg-color: var(--primary);
+  --twikoo-button-hover-bg-color: var(--primary-light);
+  --twikoo-button-text-color: white;
+  --twikoo-input-bg-color: var(--input-bg);
+  --twikoo-input-border-color: var(--line-divider);
+  --twikoo-input-text-color: var(--text-primary);
+  --twikoo-success-color: var(--success);
+  --twikoo-warning-color: var(--warning);
+  --twikoo-error-color: var(--error);
+  --twikoo-font-family: var(--font-sans);
+}
+</style>
+
+<script>
+document.addEventListener('astro:page-load', () => {
+  function loadTwikoo() {
+    const commentsContainer = document.getElementById('tcomment');
+    if (commentsContainer) {
+      const script = document.createElement('script');
+      script.src = 'https://cdn.jsdelivr.net/npm/twikoo@1.6.44/dist/twikoo.min.js';
+      script.async = true;
+      script.defer = true;
+      script.onload = () => {
+        twikoo.init({
+            envId: 'https://plbt.hhj520.top/',
+            el: '#tcomment',
+            path: location.pathname,
+            lang: 'zh-CN',
+            lazy: true,
+            customStyle: `
+              .tk-comment {
+                border-bottom: 1px solid var(--line-divider);
+              }
+              .tk-submit {
+                background-color: var(--primary);
+                border-radius: var(--radius);
+              }
+              .tk-submit:hover {
+                background-color: var(--primary-light);
+              }
+            `
+        });
+      };
+      document.body.appendChild(script);
+    }
+  }
+  
+  setTimeout(loadTwikoo, 1000);
+});
+</script>
