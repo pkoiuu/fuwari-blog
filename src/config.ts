@@ -41,7 +41,7 @@ export const siteConfig: SiteConfig = {
 
 export const navBarConfig: NavBarConfig = {
 	links: [
-		LinkPreset.朋友圈🎉,
+		LinkPreset.朋友圈,
 		LinkPreset.时间线,
 		LinkPreset.关于,
 		{
