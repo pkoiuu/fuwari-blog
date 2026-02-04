@@ -16,10 +16,16 @@ import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {
 	const specEntries = await getCollection('spec');
-	return specEntries.map((entry) => ({
-		params: { slug: entry.slug },
-		props: { entry },
-	}));
+	return specEntries.map((entry) => {
+		// 从 entry.id 中提取原始文件名（包含点）
+		const idParts = entry.id.split('/');
+		const fileName = idParts[idParts.length - 1];
+		const slug = fileName.replace('.md', '');
+		return {
+			params: { slug: slug },
+			props: { entry },
+		};
+	});
 }
 
 const { entry } = Astro.props;
