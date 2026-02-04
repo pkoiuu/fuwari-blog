@@ -1,3 +1,12 @@
+---
+title: "About"
+published: 2024-01-01
+description: "关于网站"
+tags:
+  - Uncategorized
+category: "Uncategorized"
+draft: false
+---
 # About
 This is the demo site for [Fuwari](https://github.com/saicaca/fuwari).
 
