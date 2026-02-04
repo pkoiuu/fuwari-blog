@@ -1,14 +1,13 @@
 ---
-title: "搭建github镜像站教程"
-
+title: 搭建github镜像站教程
 published: 2025-08-09
-description: >
-  前言:
-  心血来潮,有了自己的VPS,那就要把它的价值发挥到极致,搭建github镜像站,正好解决了面向搭建github镜像站大众的不怎么流畅的问题,为我以后查看代码/下载资源/分享链接,提供了莫大的帮助
+description: |
+  前言: 心血来潮,有了自己的VPS,那就要把它的价值发挥到极致,搭建github镜像站,正好解决了面向搭建github镜像站大众的不怎么流畅的问题,为我以后查看代码/下载资源/分享链接,提供了莫大的帮助
 tags:
   - Uncategorized
-category: "所有"
+category: 所有
 draft: false
+image: https://cdnkp.hhj520.top/wp-content/uploads/2025/05/1754062062-9a5eab80ffbcb1f4482acef4f2326bb7-scaled.png
 ---
 前言:
 

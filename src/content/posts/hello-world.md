@@ -1,17 +1,15 @@
 ---
-title: "关于Hello world | 你好,世界"
+title: 关于Hello world | 你好,世界
 published: 2025-08-22
-description: >
-  前几天,我在这一个blog主题的作者的博客上看到了一句
-  "留存此篇文章不是因为懒，这篇文章见证了我博客搭建成功的时间(≧▽≦)"
-  我觉得这一句写的非常的好! 
-  说实话写这一篇Hello world的时候我不知道为什么所有cms默认就有Hello world,我觉得好烦人...
+description: |
+  前几天,我在这一个blog主题的作者的博客上看到了一句 "留存此篇文章不是因为懒，这篇文章见证了我博客搭建成功的时间(≧▽≦)" 我觉得这一句写的非常的好!  说实话写这一篇Hello world的时候我不知道为什么所有cms默认就有Hello world,我觉得好烦人...
 tags:
   - Hello world
   - 你好世界
   - 关于
-category: "灵感"
+category: 灵感
 draft: false
+image: https://cdnkp.hhj520.top/wp-content/uploads/2025/08/1755831132-20250822025212959108.webp
 ---
 前几天,我在这一个blog主题的作者的博客上看到了一句
 

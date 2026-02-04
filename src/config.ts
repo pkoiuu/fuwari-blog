@@ -66,6 +66,11 @@ export const navBarConfig: NavBarConfig = {
 			url: "/spec/page-1770176032.226729",
 			external: false
 		},
+                   {
+			name: "友链",
+			url: "/spec/friends",
+			external: false
+		},
 		{
 			name: "旧站",
 			url: "https://cdnkp.hhj520.top", // Internal links should not include the base path, as it is automatically added

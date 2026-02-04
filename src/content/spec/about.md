@@ -8,7 +8,6 @@ category: "Uncategorized"
 draft: false
 ---
 # About
-This is the demo site for [Fuwari](https://github.com/saicaca/fuwari).
 个人介绍
 
 **我的名字是黄浩景,英文缩写hhj (Huang Haojing)****-爱好听音乐,写文章,看散文目前年龄13 初中 来自福建你们可以叫我 hhj**
