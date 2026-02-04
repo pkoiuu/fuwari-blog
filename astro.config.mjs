@@ -29,6 +29,13 @@ export default defineConfig({
 	site: "https://fuwari.vercel.app/",
 	base: "/",
 	trailingSlash: "always",
+	compressHTML: true,
+	build: {
+		assets: 'assets',
+		cssCodeSplit: true,
+		jsx: 'preserve',
+	},
+	output: 'static',
 	integrations: [
 		tailwind({
 			nesting: true,
@@ -166,7 +173,34 @@ export default defineConfig({
 					}
 					warn(warning);
 				},
+				output: {
+					manualChunks: {
+						vendor: ['svelte', '@iconify/svelte'],
+						math: ['katex', 'rehype-katex', 'remark-math'],
+						code: ['@expressive-code/core', 'astro-expressive-code'],
+						ui: ['photoswipe', 'overlayscrollbars'],
+					},
+				},
 			},
+			minify: 'esbuild',
+			cssMinify: 'esbuild',
+			modulePreload: {
+				polyfill: true,
+			},
+			target: 'es2020',
+			terserOptions: {
+				compress: {
+					drop_console: true,
+					drop_debugger: true,
+				},
+			},
+		},
+		optimizeDeps: {
+			enforce: true,
+			include: ['@iconify-json/fa6-brands', '@iconify-json/fa6-regular', '@iconify-json/fa6-solid'],
+		},
+		resolve: {
+			preferBuiltins: true,
 		},
 	},
 });
