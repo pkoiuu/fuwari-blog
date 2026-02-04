@@ -85,10 +85,10 @@ const jsonLd = {
             <div class="onload-animation">
                 <PostMetadata
                         class="mb-5"
-                        published={entry.data.published}
+                        published={entry.data.published || new Date()}
                         updated={entry.data.updated}
-                        tags={entry.data.tags}
-                        category={entry.data.category}
+                        tags={entry.data.tags || []}
+                        category={entry.data.category || ""}
                 ></PostMetadata>
                 {!entry.data.image && <div class="border-[var(--line-divider)] border-dashed border-b-[1px] mb-5"></div>}
             </div>
