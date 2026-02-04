@@ -175,14 +175,30 @@ export default defineConfig({
 				},
 				output: {
 					manualChunks: {
-						vendor: ['svelte', '@iconify/svelte'],
-						math: ['katex', 'rehype-katex', 'remark-math'],
-						code: ['@expressive-code/core', 'astro-expressive-code'],
-						ui: ['photoswipe', 'overlayscrollbars'],
+						// 核心框架
+						'core-vendor': ['svelte', '@iconify/svelte'],
+						// 数学公式相关
+						'math': ['katex', 'rehype-katex', 'remark-math'],
+						// 代码高亮
+						'code-highlight': ['@expressive-code/core', 'astro-expressive-code'],
+						// UI 组件（延迟加载）
+						'ui-lightbox': ['photoswipe'],
+						'ui-scrollbar': ['overlayscrollbars'],
+						// Swup 相关
+						'swup-core': ['@swup/astro'],
+						'swup-plugins': [
+							'@swup/scroll-plugin',
+							'@swup/preload-plugin',
+							'@swup/head-plugin',
+							'@swup/scripts-plugin',
+							'@swup/a11y-plugin'
+						],
 					},
+					// 代码分割配置
+					inlineDynamicImports: false,
 				},
 			},
-			minify: 'esbuild',
+			minify: 'terser',
 			cssMinify: 'esbuild',
 			modulePreload: {
 				polyfill: true,
@@ -192,15 +208,41 @@ export default defineConfig({
 				compress: {
 					drop_console: true,
 					drop_debugger: true,
+					pure_funcs: ['console.log', 'console.info', 'console.debug'],
+					dead_code: true,
+					unused: true,
+				},
+				mangle: {
+					safari10: true,
+				},
+				format: {
+					comments: false,
 				},
 			},
+			// 资源内联阈值
+			assetsInlineLimit: 4096,
+			// 代码分割大小限制
+			chunkSizeWarningLimit: 1000,
 		},
 		optimizeDeps: {
 			enforce: true,
-			include: ['@iconify-json/fa6-brands', '@iconify-json/fa6-regular', '@iconify-json/fa6-solid'],
+			include: [
+				'@iconify-json/fa6-brands',
+				'@iconify-json/fa6-regular',
+				'@iconify-json/fa6-solid',
+				'@iconify-json/material-symbols',
+			],
+			// 排除延迟加载的模块
+			exclude: ['photoswipe', 'overlayscrollbars'],
 		},
 		resolve: {
 			preferBuiltins: true,
+		},
+		// 开发服务器配置
+		server: {
+			fs: {
+				strict: false,
+			},
 		},
 	},
 });
