@@ -12,18 +12,21 @@ interface Props {
 	class: string;
 }
 
-const { title, pubDate } = Astro.props;
+const { title, slug, pubDate } = Astro.props;
 const className = Astro.props.class;
 const profileConf = profileConfig;
 const licenseConf = licenseConfig;
-const postUrl = decodeURIComponent(Astro.url.toString());
+// 使用当前页面 URL，确保显示正确的域名
+const postUrl = typeof window !== 'undefined' 
+    ? window.location.href 
+    : decodeURIComponent(Astro.url.toString());
 ---
 <div class={`relative transition overflow-hidden bg-[var(--license-block-bg)] py-5 px-6 ${className}`}>
     <div class="transition font-bold text-black/75 dark:text-white/75">
         {title}
     </div>
-    <a href={postUrl} class="link text-[var(--primary)]">
-        {postUrl}
+    <a href={`/posts/${slug}/`} class="link text-[var(--primary)] break-all">
+        {typeof window !== 'undefined' ? window.location.origin : ''}/posts/{slug}/
     </a>
     <div class="flex gap-6 mt-2">
         <div>

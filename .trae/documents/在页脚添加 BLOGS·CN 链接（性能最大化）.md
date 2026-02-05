@@ -1,0 +1,42 @@
+## 优化方案
+
+### 1. 简化 Comment.astro
+
+* 移除复杂的 scrollTo/scrollBy 拦截逻辑
+
+* 移除 MutationObserver 监听
+
+* 移除 hashchange 拦截
+
+* 保留基本的 `jumpToComment: false` 配置
+
+* 使用更轻量级的延迟加载策略
+
+### 2. 性能优化
+
+* 使用 Intersection Observer 延迟加载评论系统
+
+* 简化脚本加载逻辑
+
+* 减少不必要的 DOM 操作
+
+* 优化 CSS 样式
+
+### 3. 保留功能
+
+* 评论系统正常显示和工作
+
+* 基本的滚动配置
+
+* 懒加载优化性能
+
+## 预期效果
+
+* 页面滚动更流畅
+
+* 评论系统响应更快
+
+* 减少 JavaScript 执行开销
+
+* 提升整体用户体验
+

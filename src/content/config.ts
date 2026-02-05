@@ -19,9 +19,22 @@ const postsCollection = defineCollection({
 		nextSlug: z.string().default(""),
 	}),
 });
+
+// 优化：为 spec 集合添加完整的 schema 验证
 const specCollection = defineCollection({
-	schema: z.object({}),
+	schema: z.object({
+		title: z.string().optional().default("Spec Page"),
+		description: z.string().optional().default(""),
+		published: z.date().optional(),
+		updated: z.date().optional(),
+		image: z.string().optional().default(""),
+		tags: z.array(z.string()).optional().default([]),
+		category: z.string().optional().default(""),
+		lang: z.string().optional().default(""),
+		draft: z.boolean().optional().default(false),
+	}),
 });
+
 export const collections = {
 	posts: postsCollection,
 	spec: specCollection,

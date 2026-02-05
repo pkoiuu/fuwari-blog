@@ -1,4 +1,5 @@
 ---
+// 字体 CSS 导入 - 使用 font-display: swap
 import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
@@ -87,6 +88,36 @@ const bannerOffset =
 		<!-- Preload critical fonts -->
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+		
+		<!-- Preload Roboto font files -->
+		<link rel="preload" href="/fonts/roboto-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin />
+		<link rel="preload" href="/fonts/roboto-latin-500-normal.woff2" as="font" type="font/woff2" crossorigin />
+		
+		<!-- Inline critical font CSS -->
+		<style is:inline>
+			/* Critical font display strategy */
+			@font-face {
+				font-family: 'Roboto';
+				font-style: normal;
+				font-weight: 400;
+				font-display: swap;
+				src: local('Roboto'), local('Roboto-Regular');
+			}
+			@font-face {
+				font-family: 'Roboto';
+				font-style: normal;
+				font-weight: 500;
+				font-display: swap;
+				src: local('Roboto Medium'), local('Roboto-Medium');
+			}
+			@font-face {
+				font-family: 'Roboto';
+				font-style: normal;
+				font-weight: 700;
+				font-display: swap;
+				src: local('Roboto Bold'), local('Roboto-Bold');
+			}
+		</style>
 
 		<meta property="og:site_name" content={siteConfig.title}>
 		<meta property="og:url" content={Astro.url}>
@@ -387,78 +418,89 @@ function init() {
 /* Load settings when entering the site */
 init();
 
+// 使用 requestAnimationFrame 批量处理 DOM 操作
+function batchDOMOperations(operations: (() => void)[]) {
+	requestAnimationFrame(() => {
+		operations.forEach(op => op());
+	});
+}
+
 const setup = () => {
-	// TODO: temp solution to change the height of the banner
-/*
-	window.swup.hooks.on('animation:out:start', () => {
-		const path = window.location.pathname
-		const body = document.querySelector('body')
-		if (path[path.length - 1] === '/' && !body.classList.contains('is-home')) {
-			body.classList.add('is-home')
-		} else if (path[path.length - 1] !== '/' && body.classList.contains('is-home')) {
-			body.classList.remove('is-home')
-		}
-	})
-*/
-	window.swup.hooks.on('link:click', () => {
-		// Remove the delay for the first time page load
-		document.documentElement.style.setProperty('--content-delay', '0ms')
-
-		// prevent elements from overlapping the navbar
-		if (!bannerEnabled) {
-			return
-		}
-		let threshold = window.innerHeight * (BANNER_HEIGHT / 100) - 72 - 16
-		let navbar = document.getElementById('navbar-wrapper')
-		if (!navbar || !document.body.classList.contains('lg:is-home')) {
-			return
-		}
-		if (document.body.scrollTop >= threshold || document.documentElement.scrollTop >= threshold) {
-			navbar.classList.add('navbar-hidden')
-		}
-	})
-	window.swup.hooks.on('content:replace', initCustomScrollbar)
+	// 合并相关 hooks 处理，减少重复操作
 	window.swup.hooks.on('visit:start', (visit: {to: {url: string}}) => {
+		const operations: (() => void)[] = [];
+		
 		// change banner height immediately when a link is clicked
-		const bodyElement = document.querySelector('body')
-		if (pathsEqual(visit.to.url, url('/'))) {
-			bodyElement!.classList.add('lg:is-home');
-		} else {
-			bodyElement!.classList.remove('lg:is-home');
+		const bodyElement = document.querySelector('body');
+		if (bodyElement) {
+			operations.push(() => {
+				if (pathsEqual(visit.to.url, url('/'))) {
+					bodyElement.classList.add('lg:is-home');
+				} else {
+					bodyElement.classList.remove('lg:is-home');
+				}
+			});
 		}
 
-		// increase the page height during page transition to prevent the scrolling animation from jumping
-		const heightExtend = document.getElementById('page-height-extend')
+		// increase the page height during page transition
+		const heightExtend = document.getElementById('page-height-extend');
 		if (heightExtend) {
-			heightExtend.classList.remove('hidden')
+			operations.push(() => heightExtend.classList.remove('hidden'));
 		}
 
 		// Hide the TOC while scrolling back to top
-		let toc = document.getElementById('toc-wrapper');
+		const toc = document.getElementById('toc-wrapper');
 		if (toc) {
-			toc.classList.add('toc-not-ready')
+			operations.push(() => toc.classList.add('toc-not-ready'));
 		}
+		
+		// Remove the delay for the first time page load
+		operations.push(() => {
+			document.documentElement.style.setProperty('--content-delay', '0ms');
+		});
+		
+		// prevent elements from overlapping the navbar
+		if (bannerEnabled) {
+			const threshold = window.innerHeight * (BANNER_HEIGHT / 100) - 72 - 16;
+			const navbar = document.getElementById('navbar-wrapper');
+			if (navbar && document.body.classList.contains('lg:is-home')) {
+				const scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+				if (scrollTop >= threshold) {
+					operations.push(() => navbar.classList.add('navbar-hidden'));
+				}
+			}
+		}
+		
+		batchDOMOperations(operations);
 	});
+	
 	window.swup.hooks.on('page:view', () => {
-		// hide the temp high element when the transition is done
-		const heightExtend = document.getElementById('page-height-extend')
+		const heightExtend = document.getElementById('page-height-extend');
 		if (heightExtend) {
-			heightExtend.classList.remove('hidden')
+			heightExtend.classList.remove('hidden');
 		}
 	});
-	window.swup.hooks.on('visit:end', (_visit: {to: {url: string}}) => {
-		setTimeout(() => {
-			const heightExtend = document.getElementById('page-height-extend')
+	
+	window.swup.hooks.on('visit:end', () => {
+		// 使用更短的延迟
+		requestAnimationFrame(() => {
+			const heightExtend = document.getElementById('page-height-extend');
 			if (heightExtend) {
-				heightExtend.classList.add('hidden')
+				heightExtend.classList.add('hidden');
 			}
 
-            // Just make the transition looks better
-            const toc = document.getElementById('toc-wrapper');
-            if (toc) {
-                toc.classList.remove('toc-not-ready')
-            }
-        }, 200)
+			const toc = document.getElementById('toc-wrapper');
+			if (toc) {
+				toc.classList.remove('toc-not-ready');
+			}
+		});
+	});
+	
+	// 延迟初始化 scrollbar，避免阻塞页面切换
+	window.swup.hooks.on('content:replace', () => {
+		requestIdleCallback(() => {
+			initCustomScrollbar();
+		}, { timeout: 100 });
 	});
 }
 if (window?.swup?.hooks) {
