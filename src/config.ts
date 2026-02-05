@@ -5,7 +5,6 @@ import type {
 	ProfileConfig,
 	SiteConfig,
 } from "./types/config";
-import { LinkPreset } from "./types/config";
 
 export const siteConfig: SiteConfig = {
 	title: "haohao的个人博客",
@@ -44,32 +43,32 @@ export const navBarConfig: NavBarConfig = {
 		{
 			name: "主页",
 			url: "/",
-			external: false
+			external: false,
 		},
 		{
 			name: "时间线",
 			url: "/archive",
-			external: false
+			external: false,
 		},
 		{
 			name: "关于",
 			url: "/about",
-			external: false
+			external: false,
 		},
 		{
 			name: "生活锁记",
 			url: "/spec/page-1770175976.599339",
-			external: false
+			external: false,
 		},
 		{
 			name: "朋友圈",
 			url: "/spec/page-1770176032.226729",
-			external: false
+			external: false,
 		},
-                   {
+		{
 			name: "友链",
 			url: "/spec/friends",
-			external: false
+			external: false,
 		},
 		{
 			name: "旧站",
@@ -80,7 +79,8 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "https://weavatar.com/avatar/182bef26eba7cad2765a159764a34f863e78e108e09311adf9a0cd79075f5aeb?s=96&d=wavatar&r=x", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+	avatar:
+		"https://weavatar.com/avatar/182bef26eba7cad2765a159764a34f863e78e108e09311adf9a0cd79075f5aeb?s=96&d=wavatar&r=x", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 	name: "Hao Hao",
 	bio: "-爱好听音乐, 写文章, 看散文.",
 	links: [

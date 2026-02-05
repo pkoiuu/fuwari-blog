@@ -1,4 +1,5 @@
 ---
+import { getCollection } from "astro:content";
 import path from "node:path";
 import License from "@components/misc/License.astro";
 import Markdown from "@components/misc/Markdown.astro";
@@ -8,20 +9,19 @@ import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getDir } from "@utils/url-utils";
 import { Icon } from "astro-icon/components";
 import { licenseConfig } from "src/config";
+import Comment from "../../components/Comment.astro";
 import ImageWrapper from "../../components/misc/ImageWrapper.astro";
 import PostMetadata from "../../components/PostMeta.astro";
-import Comment from "../../components/Comment.astro";
 import { profileConfig, siteConfig } from "../../config";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
-import { getCollection } from "astro:content";
 
 export async function getStaticPaths() {
-	const specEntries = await getCollection('spec');
+	const specEntries = await getCollection("spec");
 	return specEntries.map((entry) => {
 		// 从 entry.id 中提取原始文件名（包含点）
-		const idParts = entry.id.split('/');
+		const idParts = entry.id.split("/");
 		const fileName = idParts[idParts.length - 1];
-		const slug = fileName.replace('.md', '');
+		const slug = fileName.replace(".md", "");
 		return {
 			params: { slug: slug },
 			props: { entry },
@@ -44,7 +44,9 @@ const jsonLd = {
 		name: profileConfig.name,
 		url: Astro.site,
 	},
-	datePublished: entry.data.published ? formatDateToYYYYMMDD(entry.data.published) : new Date().toISOString().split('T')[0],
+	datePublished: entry.data.published
+		? formatDateToYYYYMMDD(entry.data.published)
+		: new Date().toISOString().split("T")[0],
 	inLanguage: entry.data.lang
 		? entry.data.lang.replace("_", "-")
 		: siteConfig.lang.replace("_", "-"),
