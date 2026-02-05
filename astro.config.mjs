@@ -4,9 +4,9 @@ import tailwind from "@astrojs/tailwind";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import swup from "@swup/astro";
+import { defineConfig } from "astro/config";
 import expressiveCode from "astro-expressive-code";
 import icon from "astro-icon";
-import { defineConfig } from "astro/config";
 import rehypeAutolinkHeadings from "rehype-autolink-headings";
 import rehypeComponents from "rehype-components"; /* Render the custom directive content */
 import rehypeKatex from "rehype-katex";
@@ -16,13 +16,13 @@ import remarkGithubAdmonitionsToDirectives from "remark-github-admonitions-to-di
 import remarkMath from "remark-math";
 import remarkSectionize from "remark-sectionize";
 import { expressiveCodeConfig } from "./src/config.ts";
+import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-copy-button.js";
 import { pluginLanguageBadge } from "./src/plugins/expressive-code/language-badge.ts";
 import { AdmonitionComponent } from "./src/plugins/rehype-component-admonition.mjs";
 import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.mjs";
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
-import { pluginCustomCopyButton } from "./src/plugins/expressive-code/custom-copy-button.js";
 
 // https://astro.build/config
 export default defineConfig({
@@ -31,11 +31,11 @@ export default defineConfig({
 	trailingSlash: "always",
 	compressHTML: true,
 	build: {
-		assets: 'assets',
+		assets: "assets",
 		cssCodeSplit: true,
-		jsx: 'preserve',
+		jsx: "preserve",
 	},
-	output: 'static',
+	output: "static",
 	integrations: [
 		tailwind({
 			nesting: true,
@@ -68,12 +68,12 @@ export default defineConfig({
 				pluginCollapsibleSections(),
 				pluginLineNumbers(),
 				pluginLanguageBadge(),
-				pluginCustomCopyButton()
+				pluginCustomCopyButton(),
 			],
 			defaultProps: {
 				wrap: true,
 				overridesByLang: {
-					'shellsession': {
+					shellsession: {
 						showLineNumbers: false,
 					},
 				},
@@ -83,7 +83,8 @@ export default defineConfig({
 				borderRadius: "0.75rem",
 				borderColor: "none",
 				codeFontSize: "0.875rem",
-				codeFontFamily: "'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
+				codeFontFamily:
+					"'JetBrains Mono Variable', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace",
 				codeLineHeight: "1.5rem",
 				frames: {
 					editorBackground: "var(--codeblock-bg)",
@@ -94,19 +95,19 @@ export default defineConfig({
 					editorActiveTabIndicatorBottomColor: "var(--primary)",
 					editorActiveTabIndicatorTopColor: "none",
 					editorTabBarBorderBottomColor: "var(--codeblock-topbar-bg)",
-					terminalTitlebarBorderBottomColor: "none"
+					terminalTitlebarBorderBottomColor: "none",
 				},
 				textMarkers: {
 					delHue: 0,
 					insHue: 180,
-					markHue: 250
-				}
+					markHue: 250,
+				},
 			},
 			frames: {
 				showCopyToClipboardButton: false,
-			}
+			},
 		}),
-        svelte(),
+		svelte(),
 		sitemap(),
 	],
 	markdown: {
@@ -176,39 +177,42 @@ export default defineConfig({
 				output: {
 					manualChunks: {
 						// 核心框架
-						'core-vendor': ['svelte', '@iconify/svelte'],
+						"core-vendor": ["svelte", "@iconify/svelte"],
 						// 数学公式相关
-						'math': ['katex', 'rehype-katex', 'remark-math'],
+						math: ["katex", "rehype-katex", "remark-math"],
 						// 代码高亮
-						'code-highlight': ['@expressive-code/core', 'astro-expressive-code'],
+						"code-highlight": [
+							"@expressive-code/core",
+							"astro-expressive-code",
+						],
 						// UI 组件（延迟加载）
-						'ui-lightbox': ['photoswipe'],
-						'ui-scrollbar': ['overlayscrollbars'],
+						"ui-lightbox": ["photoswipe"],
+						"ui-scrollbar": ["overlayscrollbars"],
 						// Swup 相关
-						'swup-core': ['@swup/astro'],
-						'swup-plugins': [
-							'@swup/scroll-plugin',
-							'@swup/preload-plugin',
-							'@swup/head-plugin',
-							'@swup/scripts-plugin',
-							'@swup/a11y-plugin'
+						"swup-core": ["@swup/astro"],
+						"swup-plugins": [
+							"@swup/scroll-plugin",
+							"@swup/preload-plugin",
+							"@swup/head-plugin",
+							"@swup/scripts-plugin",
+							"@swup/a11y-plugin",
 						],
 					},
 					// 代码分割配置
 					inlineDynamicImports: false,
 				},
 			},
-			minify: 'terser',
-			cssMinify: 'esbuild',
+			minify: "terser",
+			cssMinify: "esbuild",
 			modulePreload: {
 				polyfill: true,
 			},
-			target: 'es2020',
+			target: "es2020",
 			terserOptions: {
 				compress: {
 					drop_console: true,
 					drop_debugger: true,
-					pure_funcs: ['console.log', 'console.info', 'console.debug'],
+					pure_funcs: ["console.log", "console.info", "console.debug"],
 					dead_code: true,
 					unused: true,
 				},
@@ -227,13 +231,13 @@ export default defineConfig({
 		optimizeDeps: {
 			enforce: true,
 			include: [
-				'@iconify-json/fa6-brands',
-				'@iconify-json/fa6-regular',
-				'@iconify-json/fa6-solid',
-				'@iconify-json/material-symbols',
+				"@iconify-json/fa6-brands",
+				"@iconify-json/fa6-regular",
+				"@iconify-json/fa6-solid",
+				"@iconify-json/material-symbols",
 			],
 			// 排除延迟加载的模块
-			exclude: ['photoswipe', 'overlayscrollbars'],
+			exclude: ["photoswipe", "overlayscrollbars"],
 		},
 		resolve: {
 			preferBuiltins: true,
