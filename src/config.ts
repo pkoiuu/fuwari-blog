@@ -50,29 +50,6 @@ export const navBarConfig: NavBarConfig = {
 			url: "/archive",
 			external: false,
 		},
-		// 多级菜单示例 - 分类
-		{
-			name: "分类",
-			url: "#",
-			external: false,
-			children: [
-				{
-					name: "技术",
-					url: "/archive?category=tech",
-					external: false,
-				},
-				{
-					name: "生活",
-					url: "/archive?category=life",
-					external: false,
-				},
-				{
-					name: "随笔",
-					url: "/archive?category=essay",
-					external: false,
-				},
-			],
-		},
 		{
 			name: "关于",
 			url: "/about",
@@ -84,19 +61,44 @@ export const navBarConfig: NavBarConfig = {
 			external: false,
 		},
 		{
-			name: "点滴",
-			url: "/spec/page-1770176032.226729",
-			external: false,
-		},
-		{
 			name: "友链",
-			url: "/spec/friends",
+			url: "#1",
 			external: false,
+			children: [
+				{
+					name: "mgxhz的博客",
+					url: "https://mgxhz.dpdns.org/",
+					external: true,
+				},
+			    {
+					name: "天海博客",
+					url: "https://woolyun.com/",
+					external: true,
+				},
+			    {
+					name: "Codfish Blog",
+					url: "https://codfish.top",
+					external: true,
+				},
+			],
 		},
+		// 多级菜单示例 - 分类
 		{
-			name: "旧站",
-			url: "https://cdnkp.hhj520.top", // Internal links should not include the base path, as it is automatically added
-			external: true, // Show an external link icon and will open in a new tab
+			name: "其他",
+			url: "#",
+			external: false,
+			children: [
+				{
+					name: "旧站",
+					url: "https://cdnkp.hhj520.top",
+					external: true,
+				},
+			    {
+					name: "朋友圈",
+					url: "/spec/page-1770176032.226729",
+					external: false,
+				},
+			],
 		},
 	],
 };
