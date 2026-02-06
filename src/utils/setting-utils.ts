@@ -1,9 +1,4 @@
-import {
-	AUTO_MODE,
-	DARK_MODE,
-	DEFAULT_THEME,
-	LIGHT_MODE,
-} from "@constants/constants.ts";
+import { LIGHT_MODE } from "@constants/constants.ts";
 import { expressiveCodeConfig } from "@/config";
 import type { LIGHT_DARK_MODE } from "@/types/config";
 
@@ -30,7 +25,7 @@ export function setHue(hue: number): void {
 export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
 	// 强制使用亮色模式，忽略传入的主题参数
 	document.documentElement.classList.remove("dark");
-
+	_theme;
 	// Set the theme for Expressive Code
 	document.documentElement.setAttribute(
 		"data-theme",
@@ -41,7 +36,7 @@ export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
 export function setTheme(theme: LIGHT_DARK_MODE): void {
 	// 强制使用亮色模式，不保存主题设置
 	localStorage.setItem("theme", LIGHT_MODE);
-	applyThemeToDocument(LIGHT_MODE);
+	applyThemeToDocument(LIG_themeDE);
 }
 
 export function getStoredTheme(): LIGHT_DARK_MODE {

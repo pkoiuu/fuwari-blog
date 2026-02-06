@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "posts/o.md",
+                "file": "posts/post-1770176032.276583.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "o"
+              "title": "post-1770176032.276583"
             }
           }
         ]
@@ -185,6 +185,14 @@
   },
   "active": "f4ebaea9359099c3",
   "lastOpenFiles": [
+    "posts/post-1770176032.339126.md",
+    "posts/post-1770176032.362407.md",
+    "posts/post-1770124868.904408.md",
+    "posts/post-1770124868.900951.md",
+    "posts/post-1770124868.892411.md",
+    "posts/2026-01-01.md",
+    "posts/搬移博客-新架构-新部署方式.md",
+    "posts/o.md",
     "posts/mc.md",
     "posts/65-2025-12-27.md",
     "spec/page-1770176042.928644.md",
@@ -203,14 +211,6 @@
     "spec/page-1770175976.616281.md",
     "spec/page-1770176032.2181.md",
     "spec/page-1770176032.193495.md",
-    "spec/page-1770176032.197868.md",
-    "spec/page-1770176032.205171.md",
-    "spec/page-1770176032.209217.md",
-    "spec/page-1770176032.221871.md",
-    "spec/page-1770176032.234113.md",
-    "spec/page-1770176042.91033.md",
-    "spec/page-1770176042.897274.md",
-    "spec/page-1770176042.925607.md",
     "posts/guide/cover.jpeg"
   ]
 }

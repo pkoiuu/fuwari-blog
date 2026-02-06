@@ -18,7 +18,7 @@ const profileConf = profileConfig;
 const licenseConf = licenseConfig;
 // 构建完整的文章 URL，确保 SSR 和 CSR 都能正确显示
 const postPath = `/posts/${slug}/`;
-const siteUrl = Astro.site ? Astro.site.toString().replace(/\/$/, '') : '';
+const siteUrl = Astro.site ? Astro.site.toString().replace(/\/$/, "") : "";
 const fullPostUrl = siteUrl + postPath;
 ---
 <div class={`relative transition overflow-hidden bg-[var(--license-block-bg)] py-5 px-6 ${className}`}>
