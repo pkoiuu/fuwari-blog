@@ -46,9 +46,32 @@ export const navBarConfig: NavBarConfig = {
 			external: false,
 		},
 		{
-			name: "时间线",
+			name: "归档",
 			url: "/archive",
 			external: false,
+		},
+		// 多级菜单示例 - 分类
+		{
+			name: "分类",
+			url: "#",
+			external: false,
+			children: [
+				{
+					name: "技术",
+					url: "/archive?category=tech",
+					external: false,
+				},
+				{
+					name: "生活",
+					url: "/archive?category=life",
+					external: false,
+				},
+				{
+					name: "随笔",
+					url: "/archive?category=essay",
+					external: false,
+				},
+			],
 		},
 		{
 			name: "关于",
@@ -56,12 +79,12 @@ export const navBarConfig: NavBarConfig = {
 			external: false,
 		},
 		{
-			name: "生活锁记",
+			name: "锁记",
 			url: "/spec/page-1770175976.599339",
 			external: false,
 		},
 		{
-			name: "朋友圈",
+			name: "点滴",
 			url: "/spec/page-1770176032.226729",
 			external: false,
 		},

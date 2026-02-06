@@ -10,23 +10,98 @@ interface Props {
 const links = Astro.props.links;
 ---
 <div id="nav-menu-panel" class:list={["float-panel float-panel-closed absolute transition-all fixed right-4 px-2 py-2"]}>
-    {links.map((link) => (
-        <a href={link.external ? link.url : url(link.url)} class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
-            hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
-        "
-           target={link.external ? "_blank" : null}
-        >
-            <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
-                {link.name}
-            </div>
-            {!link.external && <Icon name="material-symbols:chevron-right-rounded"
-                  class="transition text-[1.25rem] text-[var(--primary)]"
-            >
-            </Icon>}
-            {link.external && <Icon name="fa6-solid:arrow-up-right-from-square"
-                  class="transition text-[0.75rem] text-black/25 dark:text-white/25 -translate-x-1"
-            >
-            </Icon>}
-        </a>
+    {links.map((link, index) => (
+        <div class="nav-menu-item" data-has-children={link.children && link.children.length > 0 ? "true" : "false"}>
+            {/* 父菜单项 */}
+            {link.children && link.children.length > 0 ? (
+                <button 
+                    class="w-full group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+                        hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+                    "
+                    data-toggle-submenu
+                    aria-expanded="false"
+                >
+                    <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
+                        {link.name}
+                    </div>
+                    <Icon name="material-symbols:chevron-right-rounded"
+                          class="transition text-[1.25rem] text-[var(--primary)] transform duration-200"
+                    />
+                </button>
+            ) : (
+                <a href={link.external ? link.url : url(link.url)} class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+                    hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+                "
+                   target={link.external ? "_blank" : null}
+                >
+                    <div class="transition text-black/75 dark:text-white/75 font-bold group-hover:text-[var(--primary)] group-active:text-[var(--primary)]">
+                        {link.name}
+                    </div>
+                    {!link.external && <Icon name="material-symbols:chevron-right-rounded"
+                          class="transition text-[1.25rem] text-[var(--primary)]"
+                    >
+                    </Icon>}
+                    {link.external && <Icon name="fa6-solid:arrow-up-right-from-square"
+                          class="transition text-[0.75rem] text-black/25 dark:text-white/25 -translate-x-1"
+                    >
+                    </Icon>}
+                </a>
+            )}
+            
+            {/* 子菜单 */}
+            {link.children && link.children.length > 0 && (
+                <div class="submenu hidden pl-4 mt-1 space-y-1">
+                    {link.children.map((child) => (
+                        <a 
+                            href={child.external ? child.url : url(child.url)} 
+                            class="group flex justify-between items-center py-2 pl-3 pr-1 rounded-lg gap-8
+                                hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition
+                            "
+                            target={child.external ? "_blank" : null}
+                        >
+                            <div class="transition text-black/60 dark:text-white/60 font-medium group-hover:text-[var(--primary)]">
+                                {child.name}
+                            </div>
+                            {child.external && <Icon name="fa6-solid:arrow-up-right-from-square"
+                                  class="transition text-[0.75rem] text-black/25 dark:text-white/25"
+                            />}
+                        </a>
+                    ))}
+                </div>
+            )}
+        </div>
     ))}
 </div>
+
+<script>
+    // 移动端子菜单展开/折叠
+    function initSubmenuToggle() {
+        const toggles = document.querySelectorAll('[data-toggle-submenu]');
+        toggles.forEach(toggle => {
+            toggle.addEventListener('click', function() {
+                const submenu = this.nextElementSibling;
+                const icon = this.querySelector('[data-icon]') || this.querySelector('.transition');
+                const isExpanded = this.getAttribute('aria-expanded') === 'true';
+                
+                if (submenu && submenu.classList.contains('submenu')) {
+                    if (isExpanded) {
+                        submenu.classList.add('hidden');
+                        this.setAttribute('aria-expanded', 'false');
+                        if (icon) icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        submenu.classList.remove('hidden');
+                        this.setAttribute('aria-expanded', 'true');
+                        if (icon) icon.style.transform = 'rotate(90deg)';
+                    }
+                }
+            });
+        });
+    }
+    
+    // 初始化
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initSubmenuToggle);
+    } else {
+        initSubmenuToggle();
+    }
+</script>
