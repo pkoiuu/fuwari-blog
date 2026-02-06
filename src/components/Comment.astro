@@ -1,4 +1,23 @@
-<div id="tcomment" class="twikoo-container"></div>
+<div id="tcomment" class="twikoo-container">
+  <!-- 加载占位符 - 纯 CSS 实现，零 JS 开销 -->
+  <div class="twikoo-skeleton" id="twikoo-loading">
+    <div class="skeleton-header">
+      <div class="skeleton-avatar"></div>
+      <div class="skeleton-info">
+        <div class="skeleton-line short"></div>
+        <div class="skeleton-line shorter"></div>
+      </div>
+    </div>
+    <div class="skeleton-content">
+      <div class="skeleton-line"></div>
+      <div class="skeleton-line medium"></div>
+    </div>
+    <div class="skeleton-actions">
+      <div class="skeleton-btn"></div>
+      <div class="skeleton-btn"></div>
+    </div>
+  </div>
+</div>
 
 <script is:inline>
 (function() {
@@ -14,6 +33,17 @@
   
   // 标记是否已初始化
   var initialized = false;
+  
+  // 隐藏加载占位符
+  function hideLoading() {
+    var loadingEl = document.getElementById('twikoo-loading');
+    if (loadingEl) {
+      loadingEl.style.opacity = '0';
+      setTimeout(function() {
+        loadingEl.style.display = 'none';
+      }, 300);
+    }
+  }
   
   // 初始化 Twikoo
   function initTwikoo() {
@@ -34,6 +64,7 @@
       };
       script.onerror = function() {
         console.error('[Twikoo] Failed to load script');
+        hideLoading();
       };
       document.head.appendChild(script);
     } else {
@@ -52,12 +83,15 @@
         jumpToComment: false
       });
       console.log('[Twikoo] Initialized successfully');
+      // 延迟隐藏加载占位符，确保 Twikoo 渲染完成
+      setTimeout(hideLoading, 500);
     } catch (e) {
       console.error('[Twikoo] Init error:', e);
+      hideLoading();
     }
   }
   
-  // 使用 Intersection Observer 延迟加载
+  // 使用 Intersection Observer 延迟加载 - 提前 200px 触发，平衡性能和体验
   if ('IntersectionObserver' in window) {
     var observer = new IntersectionObserver(function(entries) {
       entries.forEach(function(entry) {
@@ -66,7 +100,10 @@
           observer.disconnect();
         }
       });
-    }, { rootMargin: '100px' });
+    }, { 
+      rootMargin: '200px',
+      threshold: 0
+    });
     
     var container = document.getElementById('tcomment');
     if (container) {
@@ -90,7 +127,108 @@
   background-color: var(--card-bg);
   border-radius: var(--radius-large);
   border: 1px solid var(--line-divider);
-  min-height: 100px;
+  min-height: 200px;
+  /* CSS containment 防止布局抖动 */
+  contain: layout style;
+  /* 平滑过渡 */
+  transition: min-height 0.3s ease;
+}
+
+/* 加载占位符样式 - 纯 CSS 实现 */
+.twikoo-skeleton {
+  padding: 1rem 0;
+  transition: opacity 0.3s ease;
+}
+
+.skeleton-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  gap: 0.75rem;
+}
+
+.skeleton-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 50%;
+  background: linear-gradient(90deg, var(--btn-bg) 25%, var(--btn-hover-bg) 50%, var(--btn-bg) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.skeleton-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skeleton-line {
+  height: 0.875rem;
+  background: linear-gradient(90deg, var(--btn-bg) 25%, var(--btn-hover-bg) 50%, var(--btn-bg) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 0.25rem;
+}
+
+.skeleton-line.short {
+  width: 30%;
+}
+
+.skeleton-line.shorter {
+  width: 20%;
+}
+
+.skeleton-line.medium {
+  width: 60%;
+}
+
+.skeleton-content {
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skeleton-actions {
+  display: flex;
+  gap: 1rem;
+  padding-top: 0.5rem;
+}
+
+.skeleton-btn {
+  width: 4rem;
+  height: 1.5rem;
+  background: linear-gradient(90deg, var(--btn-bg) 25%, var(--btn-hover-bg) 50%, var(--btn-bg) 75%);
+  background-size: 200% 100%;
+  animation: skeleton-loading 1.5s ease-in-out infinite;
+  border-radius: 0.25rem;
+}
+
+@keyframes skeleton-loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Twikoo 加载完成后的容器样式 */
+:global(.twikoo) {
+  animation: twikoo-fade-in 0.3s ease;
+}
+
+@keyframes twikoo-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* 暗黑模式下的评论样式优化 */

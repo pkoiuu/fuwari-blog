@@ -1,10 +1,8 @@
 ---
-title: "Trae CN字节跳动ai ide使用感受(不推荐)"
-
+title: Trae CN字节跳动ai ide使用感受(不推荐)
 published: 2025-08-22
-description: >
-  先来介绍一下
-  Trae CN是字节跳动在中国的原生支持ai ide,其Trae在海外广受好评,Trae内置了免费国外一流AI模型,在国内使用需要神秘的小魔法~Trae CN则是字节跳动在中国大陆推出,使用不需要神秘的魔法
+description: |
+  先来介绍一下 Trae CN是字节跳动在中国的原生支持ai ide,其Trae在海外广受好评,Trae内置了免费国外一流AI模型,在国内使用需要神秘的小魔法~Trae CN则是字节跳动在中国大陆推出,使用不需要神秘的魔法
 tags:
   - ai ide
   - sb AI
@@ -12,8 +10,9 @@ tags:
   - 使用感受
   - 字节跳动
   - 性能占用
-category: "灵感"
+category: 灵感
 draft: false
+image: https://cdnkp.hhj520.top/wp-content/uploads/2025/08/1755933786-20250823072306112473.webp
 ---
 先来介绍一下
 
