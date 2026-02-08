@@ -1,9 +1,5 @@
 ---
-// 字体 CSS 导入 - 使用 font-display: swap
-import "@fontsource/roboto/400.css";
-import "@fontsource/roboto/500.css";
-import "@fontsource/roboto/700.css";
-
+// 使用系统默认字体，不加载外部字体
 import ConfigCarrier from "@components/ConfigCarrier.astro";
 import { profileConfig, siteConfig } from "@/config";
 import {
@@ -85,33 +81,20 @@ const bannerOffset =
 		<meta name="description" content={description || pageTitle}>
 		<meta name="author" content={profileConfig.name}>
 
-		<!-- Preload critical fonts -->
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<!-- Preconnect to external domains -->
+		<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
+		<link rel="preconnect" href="https://s4.zstatic.net" crossorigin />
 		<link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
+		<link rel="dns-prefetch" href="https://s4.zstatic.net" />
 		
-		<!-- Inline critical font CSS -->
+		<!-- 使用系统默认字体 -->
 		<style is:inline>
-			/* Critical font display strategy */
-			@font-face {
-				font-family: 'Roboto';
-				font-style: normal;
-				font-weight: 400;
-				font-display: swap;
-				src: local('Roboto'), local('Roboto-Regular');
-			}
-			@font-face {
-				font-family: 'Roboto';
-				font-style: normal;
-				font-weight: 500;
-				font-display: swap;
-				src: local('Roboto Medium'), local('Roboto-Medium');
-			}
-			@font-face {
-				font-family: 'Roboto';
-				font-style: normal;
-				font-weight: 700;
-				font-display: swap;
-				src: local('Roboto Bold'), local('Roboto-Bold');
+			/* 系统默认字体栈 */
+			html {
+				font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+				text-rendering: optimizeLegibility;
+				-webkit-font-smoothing: antialiased;
+				-moz-osx-font-smoothing: grayscale;
 			}
 		</style>
 
@@ -212,6 +195,14 @@ const bannerOffset =
 </style>
 
 <script>
+// 导入缓存管理器（客户端自动延迟注册 Service Worker）
+import { initCacheManager } from "../utils/cache-manager";
+
+// 确保缓存管理器初始化
+if (typeof window !== 'undefined') {
+  initCacheManager();
+}
+
 import 'overlayscrollbars/overlayscrollbars.css';
 import {
 	OverlayScrollbars,

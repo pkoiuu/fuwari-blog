@@ -9,12 +9,21 @@ interface Props {
 	position?: string;
 	basePath?: string;
 	loading?: "eager" | "lazy";
+	fetchpriority?: "high" | "low" | "auto";
 }
 
-import { Image } from "astro:assets";
+import { Image, Picture } from "astro:assets";
 import { url } from "../../utils/url-utils";
 
-const { id, src, alt, position = "center", basePath = "/", loading = "lazy" } = Astro.props;
+const {
+	id,
+	src,
+	alt,
+	position = "center",
+	basePath = "/",
+	loading = "lazy",
+	fetchpriority = "auto",
+} = Astro.props;
 const className = Astro.props.class;
 
 const isLocal = !(
@@ -24,6 +33,7 @@ const isLocal = !(
 	src.startsWith("data:")
 );
 const isPublic = src.startsWith("/");
+const isExternal = src.startsWith("http") || src.startsWith("https");
 
 // TODO temporary workaround for images dynamic import
 // https://github.com/withastro/astro/issues/3373
@@ -45,37 +55,60 @@ if (isLocal) {
 	img = await file();
 }
 
-const imageClass = "w-full h-full object-cover transition-opacity duration-300 opacity-0";
+const imageClass =
+	"w-full h-full object-cover transition-opacity duration-300 opacity-0";
 const imageStyle = `object-position: ${position}`;
+
+// 判断是否为关键图片（首屏图片使用 eager 加载）
+const isCritical = fetchpriority === "high" || loading === "eager";
 ---
 <div id={id} class:list={[className, 'overflow-hidden relative']}>
-    {/* 骨架屏占位符 */}
-    <div class="skeleton-placeholder absolute inset-0 bg-[var(--btn-bg)] animate-pulse">
-        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skeleton-shimmer"></div>
-    </div>
+    {/* 骨架屏占位符 - 仅对非关键图片显示 */}
+    {!isCritical && (
+        <div class="skeleton-placeholder absolute inset-0 bg-[var(--btn-bg)] animate-pulse">
+            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skeleton-shimmer"></div>
+        </div>
+    )}
     
     {/* 图片容器 */}
     <div class="image-container relative w-full h-full">
         {isLocal && img && (
-            <Image 
+            <Picture 
                 src={img} 
                 alt={alt || ""} 
-                class={imageClass}
+                class={isCritical ? "w-full h-full object-cover" : imageClass}
                 style={imageStyle}
                 loading={loading}
-                decoding="async"
-                data-image-loaded="false"
+                decoding={isCritical ? "sync" : "async"}
+                fetchpriority={fetchpriority}
+                data-image-loaded={isCritical ? "true" : "false"}
+                formats={['avif', 'webp']}
+                fallbackFormat="jpg"
             />
         )}
-        {!isLocal && (
+        {!isLocal && isExternal && (
+            <img 
+                src={src} 
+                alt={alt || ""} 
+                class={isCritical ? "w-full h-full object-cover" : imageClass}
+                style={imageStyle}
+                loading={loading}
+                decoding={isCritical ? "sync" : "async"}
+                fetchpriority={fetchpriority}
+                data-image-loaded={isCritical ? "true" : "false"}
+                crossorigin="anonymous"
+            />
+        )}
+        {!isLocal && !isExternal && (
             <img 
                 src={isPublic ? url(src) : src} 
                 alt={alt || ""} 
-                class={imageClass}
+                class={isCritical ? "w-full h-full object-cover" : imageClass}
                 style={imageStyle}
                 loading={loading}
-                decoding="async"
-                data-image-loaded="false"
+                decoding={isCritical ? "sync" : "async"}
+                fetchpriority={fetchpriority}
+                data-image-loaded={isCritical ? "true" : "false"}
             />
         )}
     </div>

@@ -36,8 +36,44 @@ export default defineConfig({
 		jsx: "preserve",
 		// 启用持久化缓存，加速后续构建
 		cache: true,
-		// 并行构建
-		concurrency: 4,
+		// 并行构建 - 增加到8以利用更多CPU核心
+		concurrency: 8,
+		// 图片优化配置
+		assetsInlineLimit: 4096,
+		// 启用CSS优化
+		cssMinify: true,
+	},
+	// 图片优化配置
+	image: {
+		service: {
+			entrypoint: "astro/assets/services/sharp",
+			config: {
+				// 默认使用 WebP 格式，质量 80
+				webp: {
+					quality: 80,
+					effort: 4,
+				},
+				// AVIF 格式配置
+				avif: {
+					quality: 75,
+					effort: 4,
+				},
+				// JPEG 格式配置
+				jpeg: {
+					quality: 80,
+					progressive: true,
+				},
+				// PNG 格式配置
+				png: {
+					quality: 80,
+					progressive: true,
+				},
+			},
+		},
+		// 响应式图片断点
+		sizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
+		// 默认图片格式优先级
+		formats: ["avif", "webp"],
 	},
 	output: "static",
 	integrations: [
@@ -52,7 +88,7 @@ export default defineConfig({
 			containers: ["main", "#toc"],
 			smoothScrolling: true,
 			cache: true,
-			preload: true,
+			preload: false, // 禁用预加载
 			accessibility: true,
 			updateHead: true,
 			updateBodyClass: false,
@@ -192,11 +228,11 @@ export default defineConfig({
 						// UI 组件（延迟加载）
 						"ui-lightbox": ["photoswipe"],
 						"ui-scrollbar": ["overlayscrollbars"],
-						// Swup 相关
+						// Swup 相关（禁用预加载插件）
 						"swup-core": ["@swup/astro"],
 						"swup-plugins": [
 							"@swup/scroll-plugin",
-							"@swup/preload-plugin",
+							// "@swup/preload-plugin", // 禁用预加载
 							"@swup/head-plugin",
 							"@swup/scripts-plugin",
 							"@swup/a11y-plugin",
@@ -204,6 +240,17 @@ export default defineConfig({
 					},
 					// 代码分割配置
 					inlineDynamicImports: false,
+					// 优化 chunk 文件名
+					chunkFileNames: "assets/[name]-[hash].js",
+					entryFileNames: "assets/[name]-[hash].js",
+					assetFileNames: (assetInfo) => {
+						const info = assetInfo.name.split(".");
+						const _ext = info[info.length - 1];
+						if (/\.(css)$/i.test(assetInfo.name)) {
+							return "assets/[name]-[hash][extname]";
+						}
+						return "assets/[name]-[hash][extname]";
+					},
 				},
 			},
 			minify: "terser",
@@ -219,6 +266,8 @@ export default defineConfig({
 					pure_funcs: ["console.log", "console.info", "console.debug"],
 					dead_code: true,
 					unused: true,
+					// 额外优化
+					passes: 2,
 				},
 				mangle: {
 					safari10: true,
@@ -227,12 +276,14 @@ export default defineConfig({
 					comments: false,
 				},
 			},
-			// 资源内联阈值
-			assetsInlineLimit: 4096,
+			// 资源内联阈值 - 增加到8KB
+			assetsInlineLimit: 8192,
 			// 代码分割大小限制
 			chunkSizeWarningLimit: 1000,
 			// 启用 CSS 优化
 			cssTarget: "es2020",
+			// 启用 sourcemap 生成（可选，生产环境可关闭）
+			sourcemap: false,
 		},
 		optimizeDeps: {
 			enforce: true,
@@ -258,6 +309,8 @@ export default defineConfig({
 		esbuild: {
 			target: "es2020",
 			legalComments: "none",
+			// 优化构建速度
+			minifyWhitespace: true,
 		},
 	},
 });
