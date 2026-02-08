@@ -27,12 +27,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "spec/page-1770176042.93794.md",
+                "file": "posts/东山岛游记.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "page-1770176042.93794"
+              "title": "东山岛游记"
             }
           }
         ],
@@ -109,7 +109,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "spec/page-1770176042.897274.md",
+                "file": "posts/东山岛游记.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -119,7 +119,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "page-1770176042.897274 的反向链接列表"
+              "title": "东山岛游记 的反向链接列表"
             }
           },
           {
@@ -179,13 +179,25 @@
               "icon": "lucide-list",
               "title": "page-1770176032.209217 的大纲"
             }
+          },
+          {
+            "id": "fc4eb52e5b0e40e3",
+            "type": "leaf",
+            "state": {
+              "type": "file-properties",
+              "state": {
+                "file": "posts/东山岛游记.md"
+              },
+              "icon": "lucide-info",
+              "title": "东山岛游记的笔记属性"
+            }
           }
-        ]
+        ],
+        "currentTab": 5
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -200,8 +212,14 @@
   },
   "active": "7f776375b5c17f45",
   "lastOpenFiles": [
-    "posts/吐槽腾讯eo.md",
+    "posts/搬移博客-新架构-新部署方式.md",
+    "posts/2025-10-08.md",
+    "posts/东山岛游记.md",
+    "posts/2025-12-24.md",
+    "posts/未命名.md",
+    "posts/2025-09-21.md",
     "spec/page-1770176042.93794.md",
+    "posts/吐槽腾讯eo.md",
     "spec/page-1770175976.608392.md",
     "spec/page-1770175976.596352.md",
     "spec/page-1770175976.592511.md",
@@ -211,7 +229,6 @@
     "spec/page-1770176032.226729.md",
     "posts/o.md",
     "posts/mc.md",
-    "posts/搬移博客-新架构-新部署方式.md",
     "posts/post-1770176032.339126.md",
     "posts/post-1770176032.362407.md",
     "posts/post-1770124868.904408.md",
@@ -221,11 +238,6 @@
     "posts/65-2025-12-27.md",
     "spec/page-1770175976.599339.md",
     "spec/page-1770176042.904838.md",
-    "spec/page-1770176042.872281.md",
-    "spec/page-1770176032.230305.md",
-    "spec/page-1770175976.612738.md",
-    "spec/page-1770175976.610546.md",
-    "spec/page-1770175976.615279.md",
     "posts/guide/cover.jpeg"
   ]
 }

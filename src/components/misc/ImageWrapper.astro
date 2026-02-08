@@ -8,12 +8,13 @@ interface Props {
 	alt?: string;
 	position?: string;
 	basePath?: string;
+	loading?: "eager" | "lazy";
 }
 
 import { Image } from "astro:assets";
 import { url } from "../../utils/url-utils";
 
-const { id, src, alt, position = "center", basePath = "/" } = Astro.props;
+const { id, src, alt, position = "center", basePath = "/", loading = "lazy" } = Astro.props;
 const className = Astro.props.class;
 
 const isLocal = !(
@@ -44,11 +45,147 @@ if (isLocal) {
 	img = await file();
 }
 
-const imageClass = "w-full h-full object-cover";
+const imageClass = "w-full h-full object-cover transition-opacity duration-300 opacity-0";
 const imageStyle = `object-position: ${position}`;
 ---
 <div id={id} class:list={[className, 'overflow-hidden relative']}>
-    <div class="transition absolute inset-0 dark:bg-black/10 bg-opacity-50 pointer-events-none"></div>
-    {isLocal && img && <Image src={img} alt={alt || ""} class={imageClass} style={imageStyle}/>}
-    {!isLocal && <img src={isPublic ? url(src) : src} alt={alt || ""} class={imageClass} style={imageStyle}/>}
+    {/* 骨架屏占位符 */}
+    <div class="skeleton-placeholder absolute inset-0 bg-[var(--btn-bg)] animate-pulse">
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skeleton-shimmer"></div>
+    </div>
+    
+    {/* 图片容器 */}
+    <div class="image-container relative w-full h-full">
+        {isLocal && img && (
+            <Image 
+                src={img} 
+                alt={alt || ""} 
+                class={imageClass}
+                style={imageStyle}
+                loading={loading}
+                decoding="async"
+                data-image-loaded="false"
+            />
+        )}
+        {!isLocal && (
+            <img 
+                src={isPublic ? url(src) : src} 
+                alt={alt || ""} 
+                class={imageClass}
+                style={imageStyle}
+                loading={loading}
+                decoding="async"
+                data-image-loaded="false"
+            />
+        )}
+    </div>
 </div>
+
+<style>
+    /* 骨架屏动画 */
+    @keyframes shimmer {
+        0% { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
+    }
+    
+    .skeleton-shimmer {
+        animation: shimmer 1.5s infinite;
+    }
+    
+    /* 图片加载完成后隐藏骨架屏 */
+    :global(img[data-image-loaded="true"]) {
+        opacity: 1 !important;
+    }
+    
+    :global(img[data-image-loaded="true"] + .skeleton-placeholder),
+    :global(.image-container:has(img[data-image-loaded="true"]) ~ .skeleton-placeholder) {
+        opacity: 0;
+        pointer-events: none;
+    }
+</style>
+
+<script>
+    // 图片懒加载优化
+    (function() {
+        'use strict';
+        
+        // 使用 Intersection Observer 延迟加载图片
+        const imageObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const img = entry.target;
+                    
+                    // 图片加载完成处理
+                    if (img.complete) {
+                        handleImageLoad(img);
+                    } else {
+                        img.addEventListener('load', () => handleImageLoad(img));
+                        img.addEventListener('error', () => handleImageError(img));
+                    }
+                    
+                    observer.unobserve(img);
+                }
+            });
+        }, {
+            rootMargin: '50px 0px',
+            threshold: 0.01
+        });
+        
+        function handleImageLoad(img) {
+            img.setAttribute('data-image-loaded', 'true');
+            img.classList.remove('opacity-0');
+            img.classList.add('opacity-100');
+            
+            // 隐藏骨架屏
+            const container = img.closest('.overflow-hidden');
+            if (container) {
+                const skeleton = container.querySelector('.skeleton-placeholder');
+                if (skeleton) {
+                    skeleton.style.opacity = '0';
+                    skeleton.style.transition = 'opacity 0.3s ease';
+                }
+            }
+        }
+        
+        function handleImageError(img) {
+            console.error('[ImageWrapper] Failed to load image:', img.src);
+            img.setAttribute('data-image-loaded', 'error');
+            
+            // 显示错误占位符
+            const container = img.closest('.overflow-hidden');
+            if (container) {
+                const skeleton = container.querySelector('.skeleton-placeholder');
+                if (skeleton) {
+                    skeleton.innerHTML = '<div class="flex items-center justify-center h-full text-black/30 dark:text-white/30">加载失败</div>';
+                }
+            }
+        }
+        
+        // 观察所有图片
+        function initImageObserver() {
+            const images = document.querySelectorAll('img[data-image-loaded="false"]');
+            images.forEach(img => imageObserver.observe(img));
+        }
+        
+        // 初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initImageObserver);
+        } else {
+            initImageObserver();
+        }
+        
+        // 监听动态添加的图片
+        const mutationObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                mutation.addedNodes.forEach((node) => {
+                    if (node.nodeType === Node.ELEMENT_NODE) {
+                        const images = (node as Element).querySelectorAll?.('img[data-image-loaded="false"]') || [];
+                        images.forEach(img => imageObserver.observe(img));
+                    }
+                });
+            });
+        });
+        
+        mutationObserver.observe(document.body, { childList: true, subtree: true });
+    })();
+</script>

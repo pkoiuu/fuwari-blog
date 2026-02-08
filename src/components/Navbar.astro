@@ -137,37 +137,64 @@ loadButtonScript();
 </script>
 
 {import.meta.env.PROD && <script is:inline define:vars={{scriptUrl: url('/pagefind/pagefind.js')}}>
-async function loadPagefind() {
+// 防止重复加载
+if (typeof window.__pagefindLoading === 'undefined') {
+    window.__pagefindLoading = false;
+    window.__pagefindLoaded = false;
+}
+
+async function loadPagefind(retryCount = 0) {
+    // 如果已经在加载或已加载，直接返回
+    if (window.__pagefindLoading || window.__pagefindLoaded || window.pagefind) {
+        console.log('Pagefind already loading or loaded, skipping...');
+        return;
+    }
+    
+    window.__pagefindLoading = true;
+    
     try {
-        const response = await fetch(scriptUrl, { method: 'HEAD' });
-        if (!response.ok) {
-            throw new Error(`Pagefind script not found: ${response.status}`);
-        }
-
+        // 使用动态 import 加载 ES 模块
         const pagefind = await import(scriptUrl);
-
+        
+        window.__pagefindLoading = false;
+        window.__pagefindLoaded = true;
+        
+        // 初始化 pagefind
         await pagefind.options({
             excerptLength: 20
         });
-
+        
         window.pagefind = pagefind;
-
+        
         document.dispatchEvent(new CustomEvent('pagefindready'));
-        console.log('Pagefind loaded and initialized successfully, event dispatched.');
+        console.log('Pagefind loaded and initialized successfully.');
     } catch (error) {
+        window.__pagefindLoading = false;
+        
+        // 如果是中止错误或网络错误，且重试次数小于3，则重试
+        if (retryCount < 3 && (error.name === 'AbortError' || error.name === 'TypeError' || error.message?.includes('Failed to fetch'))) {
+            console.warn(`Pagefind load failed, retrying... (${retryCount + 1}/3)`);
+            setTimeout(() => loadPagefind(retryCount + 1), 500 * (retryCount + 1));
+            return;
+        }
+        
         console.error('Failed to load Pagefind:', error);
         window.pagefind = {
             search: () => Promise.resolve({ results: [] }),
             options: () => Promise.resolve(),
         };
         document.dispatchEvent(new CustomEvent('pagefindloaderror'));
-        console.log('Pagefind load error, event dispatched.');
     }
 }
 
+// 延迟加载，避免阻塞首屏
+function initLoad() {
+    setTimeout(() => loadPagefind(0), 100);
+}
+
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadPagefind);
+    document.addEventListener('DOMContentLoaded', initLoad);
 } else {
-    loadPagefind();
+    initLoad();
 }
 </script>}

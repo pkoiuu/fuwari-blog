@@ -34,6 +34,10 @@ export default defineConfig({
 		assets: "assets",
 		cssCodeSplit: true,
 		jsx: "preserve",
+		// 启用持久化缓存，加速后续构建
+		cache: true,
+		// 并行构建
+		concurrency: 4,
 	},
 	output: "static",
 	integrations: [
@@ -178,7 +182,7 @@ export default defineConfig({
 					manualChunks: {
 						// 核心框架
 						"core-vendor": ["svelte", "@iconify/svelte"],
-						// 数学公式相关
+						// 数学公式相关（延迟加载）
 						math: ["katex", "rehype-katex", "remark-math"],
 						// 代码高亮
 						"code-highlight": [
@@ -227,6 +231,8 @@ export default defineConfig({
 			assetsInlineLimit: 4096,
 			// 代码分割大小限制
 			chunkSizeWarningLimit: 1000,
+			// 启用 CSS 优化
+			cssTarget: "es2020",
 		},
 		optimizeDeps: {
 			enforce: true,
@@ -247,6 +253,11 @@ export default defineConfig({
 			fs: {
 				strict: false,
 			},
+		},
+		// 预构建配置，加速开发服务器启动
+		esbuild: {
+			target: "es2020",
+			legalComments: "none",
 		},
 	},
 });

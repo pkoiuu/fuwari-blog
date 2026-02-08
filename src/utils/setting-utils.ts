@@ -22,7 +22,7 @@ export function setHue(hue: number): void {
 	r.style.setProperty("--hue", String(hue));
 }
 
-export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
+export function applyThemeToDocument(_theme: LIGHT_DARK_MODE) {
 	// 强制使用亮色模式，忽略传入的主题参数
 	document.documentElement.classList.remove("dark");
 	_theme;
@@ -33,10 +33,10 @@ export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
 	);
 }
 
-export function setTheme(theme: LIGHT_DARK_MODE): void {
+export function setTheme(_theme: LIGHT_DARK_MODE): void {
 	// 强制使用亮色模式，不保存主题设置
 	localStorage.setItem("theme", LIGHT_MODE);
-	applyThemeToDocument(LIG_themeDE);
+	applyThemeToDocument(LIGHT_MODE);
 }
 
 export function getStoredTheme(): LIGHT_DARK_MODE {
