@@ -189,15 +189,15 @@ onMount(() => {
 </script>
 
 <!-- search bar for desktop -->
-<div id="search-bar" class="hidden lg:flex items-center h-11 rounded-full bg-black/[0.04] dark:bg-white/5 hover:bg-black/[0.06] hover:dark:bg-white/10 transition-all duration-300 px-4 cursor-text"
+<div id="search-bar" class="hidden lg:flex items-center h-11 rounded-full bg-black/[0.04] hover:bg-black/[0.06] transition-all duration-300 px-4 cursor-text"
      on:click={() => document.getElementById('search-input-desktop')?.focus()}
      on:focusin={() => setPanelVisibility(true, true)}
      on:focusout={() => setPanelVisibility(false, true)}
 >
-    <Icon name="material-symbols:search-rounded" class="text-xl text-black/30 dark:text-white/30 transition"></Icon>
+    <Icon name="material-symbols:search-rounded" class="text-xl text-black/30 transition"></Icon>
     <input id="search-input-desktop" type="text" placeholder={i18n(I18nKey.search)} bind:value={keywordDesktop}
            on:input={() => handleSearch(keywordDesktop, true)}
-           class="input-reset ml-2 text-sm text-black/50 dark:text-white/50 placeholder-black/30 dark:placeholder-white/30 bg-transparent outline-none w-24 focus:w-48 transition-all duration-300"
+           class="input-reset ml-2 text-sm text-black/50 placeholder-black/30 bg-transparent outline-none w-24 focus:w-48 transition-all duration-300"
     >
 </div>
 
@@ -211,18 +211,18 @@ onMount(() => {
 <!-- search panel -->
 <div id="search-panel" class="float-panel float-panel-closed absolute z-50 right-0 top-20 w-[calc(100vw-2rem)] lg:w-[30rem] max-w-[30rem] rounded-2xl p-4 bg-[var(--card-bg)] transition shadow-xl border border-[var(--line-divider)]">
     <!-- search input for phone/tablet -->
-    <div class="flex lg:hidden items-center h-10 rounded-full bg-black/[0.04] dark:bg-white/5 px-4 mb-4">
-        <Icon name="material-symbols:search-rounded" class="text-lg text-black/30 dark:text-white/30 transition"></Icon>
+    <div class="flex lg:hidden items-center h-10 rounded-full bg-black/[0.04] px-4 mb-4">
+        <Icon name="material-symbols:search-rounded" class="text-lg text-black/30 transition"></Icon>
         <input type="text" placeholder={i18n(I18nKey.search)} bind:value={keywordMobile}
                on:input={() => handleSearch(keywordMobile, false)}
-               class="input-reset ml-2 text-sm text-black/50 dark:text-white/50 placeholder-black/30 dark:placeholder-white/30 bg-transparent outline-none w-full"
+               class="input-reset ml-2 text-sm text-black/50 placeholder-black/30 bg-transparent outline-none w-full"
         >
     </div>
 
     <!-- search results -->
     <div class="max-h-[60vh] overflow-y-auto">
         {#if isSearching}
-            <div class="flex items-center justify-center py-8 text-black/30 dark:text-white/30">
+            <div class="flex items-center justify-center py-8 text-black/30">
                 <Icon name="material-symbols:sync-rounded" class="text-2xl animate-spin"></Icon>
                 <span class="ml-2">{i18n(I18nKey.searching)}...</span>
             </div>
@@ -231,16 +231,16 @@ onMount(() => {
                 {#each result as item}
                     <a href={item.url} class="block p-3 rounded-xl hover:bg-[var(--btn-plain-bg-hover)] active:bg-[var(--btn-plain-bg-active)] transition-colors">
                         <div class="font-medium text-[var(--primary)] line-clamp-1">{item.meta.title}</div>
-                        <div class="text-sm text-black/50 dark:text-white/50 line-clamp-2 mt-1">{@html item.excerpt}</div>
+                        <div class="text-sm text-black/50 line-clamp-2 mt-1">{@html item.excerpt}</div>
                     </a>
                 {/each}
             </div>
         {:else if keywordDesktop || keywordMobile}
-            <div class="text-center py-8 text-black/30 dark:text-white/30">
+            <div class="text-center py-8 text-black/30">
                 {i18n(I18nKey.noResultsFound)}
             </div>
         {:else}
-            <div class="text-center py-8 text-black/30 dark:text-white/30">
+            <div class="text-center py-8 text-black/30">
                 {i18n(I18nKey.typeToSearch)}
             </div>
         {/if}

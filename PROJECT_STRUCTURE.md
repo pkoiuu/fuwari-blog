@@ -407,6 +407,9 @@ pnpm lint         # 代码检查
 | 2026-02-06 | 修复评论区排版错乱，添加骨架屏 | Comment.astro | AI |
 | 2026-02-06 | 修复 License 组件文章链接显示 | License.astro | AI |
 | 2026-02-06 | 修改站点域名为 hhj520.top | astro.config.mjs | AI |
+| 2026-02-09 | 清理暗黑模式样式代码 | Comment.astro, PostCard.astro, PostMeta.astro, DisplaySettings.svelte, [...slug].astro, Footer.astro, Navbar.astro | AI |
+| 2026-02-09 | 优化 Service Worker 支持外部资源缓存 | sw.js | AI |
+| 2026-02-09 | 调整本地资源缓存为3小时，过期缓存优先使用 | sw.js | AI |
 
 ---
 

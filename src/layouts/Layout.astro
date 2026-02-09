@@ -533,6 +533,15 @@ window.onresize = () => {
 </script>
 
 <script>
+// 抑制已知的无害错误（如资源预加载取消）
+window.addEventListener('error', (e) => {
+	// 忽略预加载取消错误
+	if (e.message && e.message.includes('Failed to fetch dynamically imported module')) {
+		e.preventDefault();
+		console.log('[Layout] Ignored preload cancellation');
+	}
+});
+
 // 延迟加载 PhotoSwipe
 let lightbox: typeof PhotoSwipeLightbox | null = null;
 let pswpPromise: Promise<typeof import("photoswipe")> | null = null;
@@ -547,7 +556,12 @@ async function loadPhotoSwipe() {
 		]);
 		PhotoSwipeLightbox = PSLightbox;
 		pswpPromise = Promise.resolve(pswp);
-		await import("photoswipe/style.css");
+		// 动态加载 CSS，添加错误处理
+		try {
+			await import("photoswipe/style.css");
+		} catch (e) {
+			console.warn("[PhotoSwipe] CSS load failed, continuing without preloaded CSS");
+		}
 	}
 	return { PhotoSwipeLightbox, pswpPromise };
 }
