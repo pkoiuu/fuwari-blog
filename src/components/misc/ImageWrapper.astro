@@ -55,8 +55,7 @@ if (isLocal) {
 	img = await file();
 }
 
-const imageClass =
-	"w-full h-full object-cover transition-opacity duration-300 opacity-0";
+const imageClass = "w-full h-full object-cover";
 const imageStyle = `object-position: ${position}`;
 
 // 判断是否为关键图片（首屏图片使用 eager 加载）
@@ -65,9 +64,7 @@ const isCritical = fetchpriority === "high" || loading === "eager";
 <div id={id} class:list={[className, 'overflow-hidden relative']}>
     {/* 骨架屏占位符 - 仅对非关键图片显示 */}
     {!isCritical && (
-        <div class="skeleton-placeholder absolute inset-0 bg-[var(--btn-bg)] animate-pulse">
-            <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skeleton-shimmer"></div>
-        </div>
+        <div class="skeleton-placeholder absolute inset-0 bg-[var(--btn-bg)] animate-pulse" />
     )}
     
     {/* 图片容器 */}
@@ -76,12 +73,12 @@ const isCritical = fetchpriority === "high" || loading === "eager";
             <Picture 
                 src={img} 
                 alt={alt || ""} 
-                class={isCritical ? "w-full h-full object-cover" : imageClass}
+                class={imageClass}
                 style={imageStyle}
                 loading={loading}
                 decoding={isCritical ? "sync" : "async"}
                 fetchpriority={fetchpriority}
-                data-image-loaded={isCritical ? "true" : "false"}
+                onload="this.previousElementSibling?.classList.add('hidden')"
                 formats={['avif', 'webp']}
                 fallbackFormat="jpg"
             />
@@ -90,15 +87,15 @@ const isCritical = fetchpriority === "high" || loading === "eager";
             <img 
                 src={src} 
                 alt={alt || ""} 
-                class={isCritical ? "w-full h-full object-cover" : imageClass}
+                class={imageClass}
                 style={imageStyle}
                 loading={loading}
                 decoding={isCritical ? "sync" : "async"}
                 fetchpriority={fetchpriority}
-                data-image-loaded={isCritical ? "true" : "false"}
-                onerror="this.style.display='none'; this.nextElementSibling && (this.nextElementSibling.style.display='flex');"
+                onload="this.previousElementSibling?.classList.add('hidden')"
+                onerror="this.style.display='none'; this.nextElementSibling?.classList.remove('hidden');"
             />
-            <div class="image-error-placeholder hidden absolute inset-0 bg-gray-100 dark:bg-gray-800 items-center justify-center text-gray-400">
+            <div class="image-error-placeholder hidden absolute inset-0 bg-gray-100 items-center justify-center text-gray-400">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
@@ -108,122 +105,13 @@ const isCritical = fetchpriority === "high" || loading === "eager";
             <img 
                 src={isPublic ? url(src) : src} 
                 alt={alt || ""} 
-                class={isCritical ? "w-full h-full object-cover" : imageClass}
+                class={imageClass}
                 style={imageStyle}
                 loading={loading}
                 decoding={isCritical ? "sync" : "async"}
                 fetchpriority={fetchpriority}
-                data-image-loaded={isCritical ? "true" : "false"}
+                onload="this.previousElementSibling?.classList.add('hidden')"
             />
         )}
     </div>
 </div>
-
-<style>
-    /* 骨架屏动画 */
-    @keyframes shimmer {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
-    }
-    
-    .skeleton-shimmer {
-        animation: shimmer 1.5s infinite;
-    }
-    
-    /* 图片加载完成后隐藏骨架屏 */
-    :global(img[data-image-loaded="true"]) {
-        opacity: 1 !important;
-    }
-    
-    :global(img[data-image-loaded="true"] + .skeleton-placeholder),
-    :global(.image-container:has(img[data-image-loaded="true"]) ~ .skeleton-placeholder) {
-        opacity: 0;
-        pointer-events: none;
-    }
-</style>
-
-<script>
-    // 图片懒加载优化
-    (function() {
-        'use strict';
-        
-        // 使用 Intersection Observer 延迟加载图片
-        const imageObserver = new IntersectionObserver((entries, observer) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const img = entry.target;
-                    
-                    // 图片加载完成处理
-                    if (img.complete) {
-                        handleImageLoad(img);
-                    } else {
-                        img.addEventListener('load', () => handleImageLoad(img));
-                        img.addEventListener('error', () => handleImageError(img));
-                    }
-                    
-                    observer.unobserve(img);
-                }
-            });
-        }, {
-            rootMargin: '50px 0px',
-            threshold: 0.01
-        });
-        
-        function handleImageLoad(img) {
-            img.setAttribute('data-image-loaded', 'true');
-            img.classList.remove('opacity-0');
-            img.classList.add('opacity-100');
-            
-            // 隐藏骨架屏
-            const container = img.closest('.overflow-hidden');
-            if (container) {
-                const skeleton = container.querySelector('.skeleton-placeholder');
-                if (skeleton) {
-                    skeleton.style.opacity = '0';
-                    skeleton.style.transition = 'opacity 0.3s ease';
-                }
-            }
-        }
-        
-        function handleImageError(img) {
-            console.error('[ImageWrapper] Failed to load image:', img.src);
-            img.setAttribute('data-image-loaded', 'error');
-            
-            // 显示错误占位符
-            const container = img.closest('.overflow-hidden');
-            if (container) {
-                const skeleton = container.querySelector('.skeleton-placeholder');
-                if (skeleton) {
-                    skeleton.innerHTML = '<div class="flex items-center justify-center h-full text-black/30 dark:text-white/30">加载失败</div>';
-                }
-            }
-        }
-        
-        // 观察所有图片
-        function initImageObserver() {
-            const images = document.querySelectorAll('img[data-image-loaded="false"]');
-            images.forEach(img => imageObserver.observe(img));
-        }
-        
-        // 初始化
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', initImageObserver);
-        } else {
-            initImageObserver();
-        }
-        
-        // 监听动态添加的图片
-        const mutationObserver = new MutationObserver((mutations) => {
-            mutations.forEach((mutation) => {
-                mutation.addedNodes.forEach((node) => {
-                    if (node.nodeType === Node.ELEMENT_NODE) {
-                        const images = (node as Element).querySelectorAll?.('img[data-image-loaded="false"]') || [];
-                        images.forEach(img => imageObserver.observe(img));
-                    }
-                });
-            });
-        });
-        
-        mutationObserver.observe(document.body, { childList: true, subtree: true });
-    })();
-</script>

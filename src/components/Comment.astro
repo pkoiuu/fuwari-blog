@@ -17,6 +17,13 @@
       <div class="skeleton-btn"></div>
     </div>
   </div>
+  <!-- 错误提示容器 -->
+  <div class="twikoo-error" id="twikoo-error" style="display: none;">
+    <div class="error-icon">💬</div>
+    <div class="error-title">评论加载失败</div>
+    <div class="error-desc">请检查网络连接或稍后重试</div>
+    <button class="error-retry" onclick="window.location.reload()">刷新页面</button>
+  </div>
 </div>
 
 <script is:inline>
@@ -45,6 +52,15 @@
     }
   }
   
+  // 显示错误提示
+  function showError() {
+    hideLoading();
+    var errorEl = document.getElementById('twikoo-error');
+    if (errorEl) {
+      errorEl.style.display = 'block';
+    }
+  }
+  
   // 初始化 Twikoo
   function initTwikoo() {
     if (initialized) return;
@@ -54,40 +70,65 @@
     
     initialized = true;
     
+    // 设置加载超时
+    var loadTimeout = setTimeout(function() {
+      console.error('[Twikoo] Load timeout');
+      showError();
+    }, 10000); // 10秒超时
+    
     // 加载 Twikoo
     if (typeof twikoo === 'undefined') {
       var script = document.createElement('script');
       script.src = CONFIG.scriptUrl;
       script.async = true;
       script.onload = function() {
+        clearTimeout(loadTimeout);
         runTwikoo();
       };
       script.onerror = function() {
+        clearTimeout(loadTimeout);
         console.error('[Twikoo] Failed to load script');
-        hideLoading();
+        showError();
       };
       document.head.appendChild(script);
     } else {
+      clearTimeout(loadTimeout);
       runTwikoo();
     }
   }
   
   function runTwikoo() {
     try {
-      twikoo.init({
+      if (typeof twikoo === 'undefined' || typeof twikoo.init !== 'function') {
+        console.error('[Twikoo] twikoo object not available');
+        showError();
+        return;
+      }
+      
+      var initResult = twikoo.init({
         envId: CONFIG.envId,
         el: CONFIG.el,
         path: location.pathname,
-        lang: CONFIG.lang,
-        lazy: true,
-        jumpToComment: false
+        lang: CONFIG.lang
       });
-      console.log('[Twikoo] Initialized successfully');
-      // 延迟隐藏加载占位符，确保 Twikoo 渲染完成
-      setTimeout(hideLoading, 500);
+      
+      // 处理 Promise 返回值
+      if (initResult && typeof initResult.then === 'function') {
+        initResult.then(function() {
+          console.log('[Twikoo] Initialized successfully');
+          setTimeout(hideLoading, 500);
+        }).catch(function(e) {
+          console.error('[Twikoo] Init promise error:', e);
+          showError();
+        });
+      } else {
+        // 非 Promise 返回值，直接认为成功
+        console.log('[Twikoo] Initialized (sync)');
+        setTimeout(hideLoading, 500);
+      }
     } catch (e) {
       console.error('[Twikoo] Init error:', e);
-      hideLoading();
+      showError();
     }
   }
   
@@ -245,5 +286,47 @@
 
 :global(.tk-submit) {
   scroll-behavior: auto !important;
+}
+
+/* 错误提示样式 */
+.twikoo-error {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--text-color);
+}
+
+.twikoo-error .error-icon {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+  opacity: 0.6;
+}
+
+.twikoo-error .error-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: var(--text-color);
+}
+
+.twikoo-error .error-desc {
+  font-size: 0.875rem;
+  color: var(--text-color);
+  opacity: 0.7;
+  margin-bottom: 1rem;
+}
+
+.twikoo-error .error-retry {
+  padding: 0.5rem 1.5rem;
+  background-color: var(--btn-bg);
+  color: var(--text-color);
+  border: 1px solid var(--line-divider);
+  border-radius: var(--radius-small);
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: background-color 0.2s ease;
+}
+
+.twikoo-error .error-retry:hover {
+  background-color: var(--btn-hover-bg);
 }
 </style>

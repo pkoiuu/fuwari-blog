@@ -84,8 +84,12 @@ const bannerOffset =
 		<!-- Preconnect to external domains -->
 		<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin />
 		<link rel="preconnect" href="https://s4.zstatic.net" crossorigin />
+		<link rel="preconnect" href="https://cdnkp.hhj520.top" crossorigin />
+		<link rel="preconnect" href="https://kpkcdn.hhj520.top" crossorigin />
 		<link rel="dns-prefetch" href="https://cdn.jsdelivr.net" />
 		<link rel="dns-prefetch" href="https://s4.zstatic.net" />
+		<link rel="dns-prefetch" href="https://cdnkp.hhj520.top" />
+		<link rel="dns-prefetch" href="https://kpkcdn.hhj520.top" />
 		
 		<!-- 使用系统默认字体 -->
 		<style is:inline>
@@ -136,6 +140,22 @@ const bannerOffset =
 			let offset = Math.floor(window.innerHeight * (BANNER_HEIGHT_EXTEND / 100));
 			offset = offset - offset % 4;
 			document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
+		</script>
+
+		<!-- Service Worker 缓存清理 -->
+		<script is:inline>
+			(function() {
+				const CURRENT_CACHE_VERSION = 'v6';
+				const storedVersion = localStorage.getItem('sw-cache-version');
+				
+				if (storedVersion !== CURRENT_CACHE_VERSION) {
+					localStorage.setItem('sw-cache-version', CURRENT_CACHE_VERSION);
+					// 清理旧缓存
+					if ('caches' in window) {
+						caches.keys().then(names => Promise.all(names.map(n => caches.delete(n))));
+					}
+				}
+			})();
 		</script>
 		<style define:vars={{
 			configHue,
@@ -540,6 +560,65 @@ window.addEventListener('error', (e) => {
 		e.preventDefault();
 		console.log('[Layout] Ignored preload cancellation');
 	}
+});
+
+// 全局图片错误处理
+document.addEventListener('DOMContentLoaded', () => {
+	// 处理所有图片加载错误
+	const handleImageError = (img) => {
+		console.warn('[Image] Failed to load:', img.src);
+		// 添加错误标记样式
+		img.style.opacity = '0.5';
+		img.style.filter = 'grayscale(100%)';
+		img.setAttribute('data-load-error', 'true');
+		
+		// 如果图片有父容器，添加错误提示
+		const parent = img.parentElement;
+		if (parent && !parent.querySelector('.image-load-error-msg')) {
+			const errorMsg = document.createElement('div');
+			errorMsg.className = 'image-load-error-msg';
+			errorMsg.style.cssText = 'position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.7); color: white; padding: 4px 8px; font-size: 12px; text-align: center;';
+			errorMsg.textContent = '图片加载失败';
+			parent.style.position = 'relative';
+			parent.appendChild(errorMsg);
+		}
+	};
+	
+	// 为现有图片添加错误监听
+	document.querySelectorAll('img').forEach(img => {
+		if (img.complete && img.naturalWidth === 0) {
+			handleImageError(img);
+		} else {
+			img.addEventListener('error', () => handleImageError(img));
+		}
+	});
+	
+	// 监听动态添加的图片
+	const observer = new MutationObserver((mutations) => {
+		mutations.forEach((mutation) => {
+			mutation.addedNodes.forEach((node) => {
+				if (node.nodeType === Node.ELEMENT_NODE) {
+					if (node.tagName === 'IMG') {
+						if (node.complete && node.naturalWidth === 0) {
+							handleImageError(node);
+						} else {
+							node.addEventListener('error', () => handleImageError(node));
+						}
+					}
+					// 检查子元素中的图片
+					node.querySelectorAll?.('img').forEach(img => {
+						if (img.complete && img.naturalWidth === 0) {
+							handleImageError(img);
+						} else {
+							img.addEventListener('error', () => handleImageError(img));
+						}
+					});
+				}
+			});
+		});
+	});
+	
+	observer.observe(document.body, { childList: true, subtree: true });
 });
 
 // 延迟加载 PhotoSwipe
