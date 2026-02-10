@@ -80,6 +80,11 @@ export const navBarConfig: NavBarConfig = {
 					url: "https://codfish.top",
 					external: true,
 				},
+				{
+					name: "合荒小站",
+					url: "https://ryqi.top/",
+					external: true,
+				},
 			],
 		},
 		// 多级菜单示例 - 分类
