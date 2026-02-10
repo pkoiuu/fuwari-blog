@@ -38,8 +38,8 @@
     scriptUrl: 'https://s4.zstatic.net/npm/twikoo@1.6.44/dist/twikoo.min.js'
   };
   
-  // 标记是否已初始化
-  var initialized = false;
+  // 当前页面路径，用于判断是否需要重新初始化
+  var currentPath = location.pathname;
   
   // 隐藏加载占位符
   function hideLoading() {
@@ -52,6 +52,15 @@
     }
   }
   
+  // 显示加载占位符（用于重新初始化）
+  function showLoading() {
+    var loadingEl = document.getElementById('twikoo-loading');
+    if (loadingEl) {
+      loadingEl.style.display = 'block';
+      loadingEl.style.opacity = '1';
+    }
+  }
+  
   // 显示错误提示
   function showError() {
     hideLoading();
@@ -61,14 +70,45 @@
     }
   }
   
+  // 隐藏错误提示
+  function hideError() {
+    var errorEl = document.getElementById('twikoo-error');
+    if (errorEl) {
+      errorEl.style.display = 'none';
+    }
+  }
+  
+  // 清理已存在的 Twikoo 实例
+  function cleanupTwikoo() {
+    var container = document.getElementById('tcomment');
+    if (container) {
+      // 保留骨架屏和错误提示，清理其他内容
+      var children = container.children;
+      for (var i = children.length - 1; i >= 0; i--) {
+        var child = children[i];
+        if (child.id !== 'twikoo-loading' && child.id !== 'twikoo-error') {
+          container.removeChild(child);
+        }
+      }
+    }
+    // 重置 twikoo 全局状态
+    if (window.twikoo) {
+      window.twikoo = undefined;
+    }
+  }
+  
   // 初始化 Twikoo
   function initTwikoo() {
-    if (initialized) return;
-    
     var container = document.getElementById('tcomment');
     if (!container) return;
     
-    initialized = true;
+    // 检查路径是否变化（Swup 页面切换后）
+    if (currentPath !== location.pathname) {
+      currentPath = location.pathname;
+      cleanupTwikoo();
+      showLoading();
+      hideError();
+    }
     
     // 设置加载超时
     var loadTimeout = setTimeout(function() {
@@ -132,32 +172,50 @@
     }
   }
   
-  // 使用 Intersection Observer 延迟加载 - 提前 200px 触发，平衡性能和体验
-  if ('IntersectionObserver' in window) {
-    var observer = new IntersectionObserver(function(entries) {
-      entries.forEach(function(entry) {
-        if (entry.isIntersecting) {
-          initTwikoo();
-          observer.disconnect();
-        }
-      });
-    }, { 
-      rootMargin: '200px',
-      threshold: 0
-    });
-    
-    var container = document.getElementById('tcomment');
-    if (container) {
-      observer.observe(container);
+  // 使用 Intersection Observer 延迟加载
+  var observer = null;
+  function setupObserver() {
+    if (observer) {
+      observer.disconnect();
     }
-  } else {
-    // 降级处理
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initTwikoo);
+    
+    if ('IntersectionObserver' in window) {
+      observer = new IntersectionObserver(function(entries) {
+        entries.forEach(function(entry) {
+          if (entry.isIntersecting) {
+            initTwikoo();
+            observer.disconnect();
+          }
+        });
+      }, { 
+        rootMargin: '200px',
+        threshold: 0
+      });
+      
+      var container = document.getElementById('tcomment');
+      if (container) {
+        observer.observe(container);
+      }
     } else {
+      // 降级处理
       initTwikoo();
     }
   }
+  
+  // 初始设置
+  setupObserver();
+  
+  // 监听 Swup 页面切换事件
+  document.addEventListener('swup:page:view', function() {
+    // 路径变化时重新初始化
+    if (currentPath !== location.pathname) {
+      currentPath = location.pathname;
+      cleanupTwikoo();
+      showLoading();
+      hideError();
+      setupObserver();
+    }
+  });
 })();
 </script>
 
