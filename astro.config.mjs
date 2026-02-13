@@ -1,6 +1,7 @@
 import sitemap from "@astrojs/sitemap";
 import svelte from "@astrojs/svelte";
 import tailwind from "@astrojs/tailwind";
+import vercel from "@astrojs/vercel";
 import { pluginCollapsibleSections } from "@expressive-code/plugin-collapsible-sections";
 import { pluginLineNumbers } from "@expressive-code/plugin-line-numbers";
 import swup from "@swup/astro";
@@ -23,6 +24,10 @@ import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
+
+// 检测部署目标
+const deployTarget = process.env.DEPLOY_TARGET || "static";
+const isVercel = deployTarget === "vercel";
 
 // https://astro.build/config
 export default defineConfig({
@@ -75,7 +80,17 @@ export default defineConfig({
 		// 默认图片格式优先级
 		formats: ["avif", "webp"],
 	},
-	output: "static",
+	// 根据部署目标选择输出模式
+	output: isVercel ? "server" : "static",
+	// Vercel 适配器配置（仅在 Vercel 部署时使用）
+	adapter: isVercel
+		? vercel({
+				imageService: true,
+				webAnalytics: {
+					enabled: true,
+				},
+		  })
+		: undefined,
 	integrations: [
 		tailwind({
 			nesting: true,
