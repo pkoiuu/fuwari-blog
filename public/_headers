@@ -1,0 +1,47 @@
+# Cloudflare Pages / Netlify 头部配置
+# 这些配置会被复制到 dist 目录
+
+# 全局安全头
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-DNS-Prefetch-Control: on
+  Vary: Accept-Encoding
+
+# 静态资源 - 长期缓存
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+# 字体文件 - 长期缓存
+/fonts/*
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+# 图标 - 短期缓存
+/favicon/*
+  Cache-Control: public, max-age=604800, must-revalidate
+
+# 搜索索引 - 短期缓存
+/pagefind/*
+  Cache-Control: public, max-age=604800, must-revalidate
+
+# HTML 页面 - 短期缓存
+/*.html
+  Cache-Control: public, max-age=86400, must-revalidate
+
+# 文章页面 - 短期缓存
+/posts/*
+  Cache-Control: public, max-age=86400, must-revalidate
+
+# 特殊页面 - 短期缓存
+/spec/*
+  Cache-Control: public, max-age=86400, must-revalidate
+
+# Sitemap 和 RSS - 不缓存
+/sitemap.xml
+  Cache-Control: public, max-age=0, must-revalidate
+
+/rss.xml
+  Cache-Control: public, max-age=0, must-revalidate

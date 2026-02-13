@@ -186,10 +186,10 @@
             "state": {
               "type": "file-properties",
               "state": {
-                "file": "posts/便于复制粘贴的页面.md"
+                "file": "posts/东山岛游记.md"
               },
               "icon": "lucide-info",
-              "title": "便于复制粘贴的页面的笔记属性"
+              "title": "东山岛游记的笔记属性"
             }
           }
         ],
@@ -197,7 +197,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 200,
+    "collapsed": true
   },
   "left-ribbon": {
     "hiddenItems": {

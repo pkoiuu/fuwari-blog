@@ -70,12 +70,12 @@ export const navBarConfig: NavBarConfig = {
 					url: "https://mgxhz.dpdns.org/",
 					external: true,
 				},
-			    {
+				{
 					name: "天海博客",
 					url: "https://woolyun.com/",
 					external: true,
 				},
-			    {
+				{
 					name: "Codfish Blog",
 					url: "https://codfish.top",
 					external: true,
@@ -98,7 +98,7 @@ export const navBarConfig: NavBarConfig = {
 					url: "https://cdnkp.hhj520.top",
 					external: true,
 				},
-			    {
+				{
 					name: "朋友圈",
 					url: "/spec/page-1770176032.226729",
 					external: false,

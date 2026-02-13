@@ -9,8 +9,21 @@ const CACHE_MAX_AGE = 3 * 3600 * 1000; // 3小时
 
 // 需要缓存的资源类型
 const CACHEABLE_EXTENSIONS = [
-	".html", ".css", ".js", ".json", ".png", ".jpg", ".jpeg", 
-	".gif", ".webp", ".svg", ".ico", ".woff", ".woff2", ".ttf", ".otf"
+	".html",
+	".css",
+	".js",
+	".json",
+	".png",
+	".jpg",
+	".jpeg",
+	".gif",
+	".webp",
+	".svg",
+	".ico",
+	".woff",
+	".woff2",
+	".ttf",
+	".otf",
 ];
 
 // 不缓存的路径
@@ -23,18 +36,18 @@ function shouldCache(request) {
 	const url = new URL(request.url);
 
 	if (request.method !== "GET") return false;
-	
+
 	// 只缓存同源请求
 	if (url.origin !== self.location.origin) return false;
-	
+
 	// 不缓存特定路径
 	if (EXCLUDE_PATHS.some((path) => url.pathname.startsWith(path))) return false;
 
 	const hasCacheableExt = CACHEABLE_EXTENSIONS.some((ext) =>
-		url.pathname.toLowerCase().endsWith(ext)
+		url.pathname.toLowerCase().endsWith(ext),
 	);
 	const hasNoExt = !url.pathname.includes(".") || url.pathname.endsWith("/");
-	
+
 	return hasCacheableExt || hasNoExt;
 }
 
@@ -54,7 +67,7 @@ function addTimestampToResponse(response) {
 /**
  * 安装事件
  */
-self.addEventListener("install", (event) => {
+self.addEventListener("install", (_event) => {
 	console.log("[SW] Installing...");
 	self.skipWaiting();
 });
@@ -70,11 +83,13 @@ self.addEventListener("activate", (event) => {
 			.then((cacheNames) => {
 				return Promise.all(
 					cacheNames
-						.filter((name) => name.startsWith("fuwari-cache-") && name !== CACHE_NAME)
-						.map((name) => caches.delete(name))
+						.filter(
+							(name) => name.startsWith("fuwari-cache-") && name !== CACHE_NAME,
+						)
+						.map((name) => caches.delete(name)),
 				);
 			})
-			.then(() => self.clients.claim())
+			.then(() => self.clients.claim()),
 	);
 });
 
@@ -87,13 +102,15 @@ async function fetchWithCache(request) {
 
 	if (cachedResponse) {
 		const timestamp = cachedResponse.headers.get("x-cache-timestamp");
-		const age = timestamp ? Date.now() - Number.parseInt(timestamp, 10) : Infinity;
-		
+		const age = timestamp
+			? Date.now() - Number.parseInt(timestamp, 10)
+			: Number.POSITIVE_INFINITY;
+
 		if (age < CACHE_MAX_AGE) {
 			// 缓存有效，直接返回
 			return cachedResponse;
 		}
-		
+
 		// 缓存过期，后台更新
 		fetch(request)
 			.then((networkResponse) => {
@@ -102,7 +119,7 @@ async function fetchWithCache(request) {
 				}
 			})
 			.catch(() => {});
-		
+
 		// 返回过期缓存
 		return cachedResponse;
 	}

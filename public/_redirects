@@ -1,0 +1,10 @@
+# Netlify / Cloudflare Pages 重定向配置
+
+# 首页重定向
+/index.html / 301
+
+# 可选：www 到非 www 重定向（如果需要）
+# https://www.hhj520.top/* https://hhj520.top/:splat 301!
+
+# 可选：HTTP 到 HTTPS 重定向（在 CDN 层配置）
+# http://hhj520.top/* https://hhj520.top/:splat 301!
